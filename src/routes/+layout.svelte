@@ -17,7 +17,7 @@
 				<a href="/register" class="btn btn-ghost shadow-lg"> Register </a>
 				<a href="/login" class="btn btn-circle shadow-lg btn-primary"> Login </a>
 			{:else}
-				<button formaction="/logout" type="submit" class="btn btn-primary  shadow-lg">
+				<button formaction="/logout" type="submit" class="btn btn-primary shadow-lg">
 					{data.user.name}
 				</button>
 			{/if}
