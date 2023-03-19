@@ -1,5 +1,5 @@
 {
-	"name": "sk-prisma-quickstart",
+	"name": "svell-me",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
@@ -42,6 +42,8 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@dicebear/collection": "^5.3.4",
+		"@dicebear/core": "^5.3.4",
 		"@lucia-auth/adapter-prisma": "^0.4.0",
 		"@lucia-auth/sveltekit": "^0.6.2",
 		"@paralleldrive/cuid2": "^2.2.0",

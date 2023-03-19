@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { serializeNonPOJOs } from '$lib/utils'
+=======
+import { afterNavigate } from '$app/navigation'
+>>>>>>> old_style
 import type { LayoutServerLoad } from './$types'
 
 export const load: LayoutServerLoad = async ({ locals }) => {

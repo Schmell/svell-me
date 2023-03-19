@@ -1,6 +1,8 @@
+import { z } from 'zod'
 import { auth } from '$lib/server/lucia'
 import { fail, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
+import { serializeNonPOJOs } from '$lib/utils'
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const session = await locals.validate()
@@ -8,7 +10,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw redirect(302, '/')
 	}
 }
-import { z } from 'zod'
 
 const registerSchema = z
 	.object({
@@ -27,6 +28,8 @@ const registerSchema = z
 			.min(1, { message: 'Email is required' })
 			.max(64, { message: 'Email must be less than 64 characters' })
 			.email({ message: 'Email must be a valid email address' }),
+		avatar: z.string({ required_error: 'Name is required' }).optional(),
+
 		password: z
 			.string({ required_error: 'Password is required' })
 			.min(6, { message: 'Password must be at least 6 characters' })
@@ -68,19 +71,26 @@ export const actions: Actions = {
 				},
 				attributes: {
 					name: result.name,
-					username: result.username
+					username: result.username,
+					email: result.email,
+					avatar: result.avatar
 				}
 			})
-		} catch (err: any) {
-			const { fieldErrors: errors } = err.flatten()
+		} catch (error: any) {
+			let errors
+			if (error.flatten) {
+				const { fieldErrors: errors } = error.flatten()
+			} else {
+				errors = serializeNonPOJOs(await error)
+			}
+			// const { fieldErrors: errors } = error.flatten()
 			const { password, passwordConfirm, ...rest } = formData
 			return {
 				data: rest,
 				errors
 			}
-			// console.error(err)
-			// return fail(400, { message: 'Could not register user' })
 		}
+
 		throw redirect(302, '/login')
 	}
 }
