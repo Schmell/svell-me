@@ -144,7 +144,8 @@ export const Populate = ({ data, userId, file, orgId }) => {
 		console.log('addTables: ')
 		try {
 			// await prisma.event.upsert(upsertObj())
-			const p = await prisma.event.upsert(upsertObj())
+			console.log('trying upsert')
+			await prisma.event.upsert(upsertObj())
 			console.log('upsert return: ')
 		} catch (error: any) {
 			console.log('Import Error: ', error.message)
