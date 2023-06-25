@@ -60,7 +60,7 @@ const registerSchema = z
 export const actions: Actions = {
 	default: async ({ request }) => {
 		const formData = Object.fromEntries(await request.formData()) as Record<string, string>
-
+		console.log('formData: ', formData)
 		try {
 			const result = registerSchema.parse(formData)
 			await auth.createUser({
@@ -78,6 +78,7 @@ export const actions: Actions = {
 			})
 		} catch (error: any) {
 			let errors
+			console.log('error: ', error)
 			if (error.flatten) {
 				const { fieldErrors: errors } = error.flatten()
 			} else {
