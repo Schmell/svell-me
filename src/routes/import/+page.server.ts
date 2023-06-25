@@ -50,7 +50,7 @@ export const actions: Actions = {
 				if (duplicates !== null) {
 					console.log('duplicates: ', duplicates)
 				}
-
+				console.log('results.data: ', results.data)
 				Populate({ data: results.data, userId: uid?.userId, file: file, orgId: org })
 			},
 			error: (status, err) => {
