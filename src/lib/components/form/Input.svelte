@@ -6,7 +6,7 @@
 	export let placeholder: string | undefined = undefined
 	export let type: string | undefined = undefined
 	export let label: string | undefined = undefined
-	export let value: string | undefined = undefined
+	export let value: string | null | undefined = undefined
 	// refactor to use $$props etc..
 </script>
 

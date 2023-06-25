@@ -1,10 +1,20 @@
 <script lang="ts">
 	import '../app.css'
+	import type { SubmitFunction } from '@sveltejs/kit'
 	import { slide } from 'svelte/transition'
 	import Icon from '@iconify/svelte'
 	import { clickOutside } from '$lib/utils'
-	import SubNav from '$lib/components/layout/SubNav.svelte'
-	import { afterNavigate } from '$app/navigation'
+	import { enhance } from '$app/forms'
+	import { themes } from '$lib/utils'
+	import { page } from '$app/stores'
+	// // Your selected Skeleton theme:
+	// import '@skeletonlabs/skeleton/themes/theme-skeleton.css'
+
+	// // This contains the bulk of Skeletons required styles:
+	// import '@skeletonlabs/skeleton/styles/all.css'
+
+	// Finally, your application's global stylesheet (sometimes labeled 'app.css')
+	// import '../app.postcss'
 
 	export let data
 
@@ -13,6 +23,13 @@
 		open = false
 	}
 	const toggleOpen = () => (open = !open)
+
+	const submitUpdateTheme: SubmitFunction = ({ action }) => {
+		const theme = action.searchParams.get('theme')
+		if (theme) {
+			document.documentElement.setAttribute('data-theme', theme)
+		}
+	}
 </script>
 
 <<<<<<< HEAD
@@ -37,10 +54,29 @@
 =======
 <div class="max-w-sm">
 	<div class="fixed top-0 z-20  w-full ">
-		<nav class="navbar border-base-300 text-secondary-content  ">
+		<nav class="navbar border-base-300 text-secondary-content ">
 			<button on:click={toggleOpen} class="btn-ghost btn hover:bg-transparent">
 				<Icon class="text-3xl text-base-300" icon="ci:hamburger-lg" />
 			</button>
+
+			<div class="flex-none">
+				<ul class="menu menu-horizontal px-1 z-50 w-40">
+					<li>
+						<button>set the theme here</button>
+						<ul class="p-2 bg-base-100 text-base-content w-full max-h-96 overflow-y-scroll">
+							<form method="POST" use:enhance={submitUpdateTheme}>
+								{#each themes as theme}
+									<li>
+										<button formaction="/?/setTheme&theme={theme}&redirectTo={$page.url.pathname}"
+											>{theme}</button
+										>
+									</li>
+								{/each}
+							</form>
+						</ul>
+					</li>
+				</ul>
+			</div>
 			<div class="user-nav">
 				<!-- <SignOut /> -->
 				{#if data.user}
@@ -88,7 +124,7 @@
 					<a href="/events" on:click={toggleOpen}>
 						<Icon icon="material-symbols:calendar-month" /> Events
 					</a>
-					<a href="/organization" on:click={toggleOpen}>
+					<a href="/organization/all" on:click={toggleOpen}>
 						<Icon icon="ic:outline-people-alt" /> Organizations
 					</a>
 					<a href="/community" on:click={toggleOpen}>
@@ -108,7 +144,53 @@
 	</main>
 
 	<footer class="shadow">
-		<div class="text-base-200">copyright @footer</div>
+		<div class="btm-nav text-base-content">
+			<button class="">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="h-5 w-5"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+					><path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+					/></svg
+				>
+			</button>
+			<button class="active">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="h-5 w-5"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+					><path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+					/></svg
+				>
+			</button>
+			<button>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="h-5 w-5"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+					><path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+					/></svg
+				>
+			</button>
+		</div>
 	</footer>
 </div>
 

@@ -28,17 +28,15 @@ export default class Blw {
 
 	getComps() {
 		const compData: any = []
-		const compBoats = this.data.filter(function (item: any) {
+		const compBoats = this.data.filter((item: any) => {
 			return item[0] === 'comphigh'
 		})
 		compBoats.sort().forEach((compBoat: any) => {
 			let competitor = {
-				id: '0',
 				compId: ''
 			}
 
-			// competitor.id = compBoat[2] + '-' + this.data.cuid
-			competitor.compId = compBoat[2] + '-' + this.data.cuid
+			competitor.compId = `${compBoat[2]}-${this.data.cuid}`
 			let compRows = this.data.filter((item: any) => {
 				var regex = new RegExp(`^comp`, 'g')
 				return item[0].match(regex) && item[2] === compBoat[2]
@@ -49,11 +47,11 @@ export default class Blw {
 			})
 			compData.push(competitor)
 		}) //each compBoats
-		const sorted = compData!.sort((a: any, b: any) => {
-			return a.boat - b.boat
-		})
+		// const sorted = compData!.sort((a: any, b: any) => {
+		// 	return a.boat - b.boat
+		// })
 
-		return sorted
+		return compData
 	} // getComps
 
 	getResults(raceId) {
@@ -63,11 +61,13 @@ export default class Blw {
 		const results = this.data.filter((item: any) => {
 			return item[0] === 'rdisc' && item[3] === raceId
 		})
+		// console.log('results: ', results)
 		results.forEach((result: any) => {
+			// console.log('result: ', result)
 			// Results in blw file have no prefix to speak of (just an r)
 			// So we need to find each row individually
 			const resultRow = {
-				resultId: `${result[3]}-${result[2]}`,
+				resultId: `${result[3]}-${result[2]}-${this.data.cuid}`,
 				compId: `${result[2]}-${this.data.cuid}`,
 				finish: this.resultHelp('rft', this.data, result)
 					? this.resultHelp('rft', this.data, result)
@@ -76,7 +76,7 @@ export default class Blw {
 					? this.resultHelp('rst', this.data, result)
 					: '',
 				points: this.resultHelp('rpts', this.data, result)
-					? this.resultHelp('rpts', this.data, result)
+					? this.resultHelp('rpts', this.data, +result)
 					: '',
 				position: this.resultHelp('rpos', this.data, result)
 					? this.resultHelp('rpos', this.data, result)
@@ -87,19 +87,19 @@ export default class Blw {
 				corrected: this.resultHelp('rcor', this.data, result)
 					? this.resultHelp('rcor', this.data, result)
 					: '',
-				rrestyp: this.resultHelp('rrestyp', this.data, result)
+				resultType: this.resultHelp('rrestyp', this.data, result)
 					? this.resultHelp('rrestyp', this.data, result)
 					: '',
 				elapsed: this.resultHelp('rele', this.data, result)
 					? this.resultHelp('rele', this.data, result)
 					: '',
-				srat: this.resultHelp('srat', this.data, result)
+				supposedRating: this.resultHelp('srat', this.data, result)
 					? this.resultHelp('srat', this.data, result)
 					: '',
-				rewin: this.resultHelp('rewin', this.data, result)
+				elapsedWin: this.resultHelp('rewin', this.data, result)
 					? this.resultHelp('rewin', this.data, result)
 					: '',
-				rrwin: this.resultHelp('rrwin', this.data, result)
+				ratingWin: this.resultHelp('rrwin', this.data, result)
 					? this.resultHelp('rrwin', this.data, result)
 					: '',
 				rrset: this.resultHelp('rrset', this.data, result)
@@ -112,13 +112,15 @@ export default class Blw {
 		return resultsArr
 	} // getResults
 
-	resultHelp(resultTag: string, data: any[], result: any[]) {
+	resultHelp(resultTag: string, data: any[], result: any[] | number) {
 		let res = data.filter((item) => {
 			return item[0] === resultTag && item[2] === result[2] && item[3] === result[3]
 		})
+		// console.log('res: ', res)
 		if (res[0]) {
 			return res[0][1]
 		} else {
+			// console.log('else res: ', res)
 			return ''
 		}
 	}
@@ -135,7 +137,7 @@ export default class Blw {
 		return fleets
 	}
 
-	getRaces() {
+	getRaces(uniqueIdString) {
 		// new object to be returned
 		let raceData: any = []
 		// Find all raceids by getting known csv row
@@ -146,12 +148,15 @@ export default class Blw {
 		races.forEach((race: any) => {
 			let raceObj = {
 				raceId: '',
+				uniqueRaceString: '',
 				starts: '',
 				name: '',
 				rank: ''
 			}
 
 			raceObj.raceId = race[3]
+			// need to get eventeid
+			raceObj.uniqueRaceString = uniqueIdString + '_' + race.raceId
 
 			let resultRows = this.data.filter((item: any) => {
 				var regex = new RegExp(`^race`, 'g')
@@ -204,15 +209,23 @@ export default class Blw {
 			const regex = new RegExp(`^ser`, 'g')
 			return item[0].match(regex)
 		})
+
+		type EventRest = {
+			venuewebsite?: string
+			venueemail?: string
+			venueburgee?: string
+			eventburgee?: string
+		}
+
 		type EventObj = {
 			event: string
 			eventwebsite: string
 			venue: string
 			eventeid: string
-			rest: {}
+			rest: EventRest
 		}
 
-		let eventObj = {
+		let eventObj: any = {
 			event: '',
 			eventwebsite: '',
 			venue: '',
@@ -226,10 +239,16 @@ export default class Blw {
 		})
 
 		const { event, eventwebsite, venue, eventeid, ...rest } = eventObj
-
+		const uniqueIdString =
+			event.toLowerCase().trim().split(' ').join('_') +
+			'-' +
+			eventeid +
+			'-' +
+			venue.toLowerCase().trim().split(' ').join('_')
 		return {
 			name: event,
 			eventwebsite,
+			uniqueIdString,
 			venueName: venue,
 			eventeid: eventeid,
 			rest
