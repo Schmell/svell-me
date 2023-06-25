@@ -52,7 +52,7 @@ export const actions: Actions = {
 				if (duplicates !== null) {
 					console.log('duplicates: ', duplicates)
 				}
-				console.log('results.data: ', results.data)
+				console.log('parse complete ')
 				Populate({ data: results.data, userId: uid?.userId, file: file, orgId: org })
 			},
 			error: (status, err) => {
@@ -64,7 +64,7 @@ export const actions: Actions = {
 		// })
 		// history.back()
 		// goto('/events')
-		console.log('redirect: ', redirect)
+		console.log('redirect: ')
 		throw redirect(300, '/events')
 		// return { status: 201 }
 	}

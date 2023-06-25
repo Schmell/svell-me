@@ -44,6 +44,7 @@ export const Populate = ({ data, userId, file, orgId }) => {
 	const event = blw.getEvent()
 	// console.log('event: ', event)
 	const { eventeid, uniqueIdString } = event
+	console.log('populate with event: ')
 
 	function upsertObj() {
 		const upObj = {
