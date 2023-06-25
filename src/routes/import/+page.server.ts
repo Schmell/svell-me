@@ -37,8 +37,10 @@ export const actions: Actions = {
 		// check for duplicates etc.. before
 
 		const texted = await file.text()
+		console.log('texted: ', texted)
 		parse(texted, {
 			complete: async (results) => {
+				console.log('complete: papaparse')
 				const uid = await input.locals.validate()
 				const duplicates = await CheckForDuplicates({
 					data: results.data,
@@ -62,6 +64,7 @@ export const actions: Actions = {
 		// })
 		// history.back()
 		// goto('/events')
+		console.log('redirect: ', redirect)
 		throw redirect(300, '/events')
 		// return { status: 201 }
 	}
