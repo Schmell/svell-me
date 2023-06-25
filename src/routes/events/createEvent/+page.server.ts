@@ -2,7 +2,8 @@ import { CheckForDuplicates, Populate } from '$lib/importers/sailwave'
 import { prisma } from '$lib/server/prisma'
 import { error, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
-import { parse } from 'papaparse'
+import pkg from 'papaparse'
+const { parse } = pkg
 
 export const load = (async ({ parent }) => {
 	const user = (await parent()).user

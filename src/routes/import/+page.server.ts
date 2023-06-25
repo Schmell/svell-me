@@ -2,7 +2,8 @@ import type { Actions, PageServerLoad } from '../$types'
 import { error, redirect } from '@sveltejs/kit'
 import { CheckForDuplicates, Populate } from '$lib/importers/sailwave'
 
-import { parse } from 'papaparse'
+import pkg from 'papaparse'
+const { parse } = pkg
 import { prisma } from '$lib/server/prisma'
 import { goto } from '$app/navigation'
 
