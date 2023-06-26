@@ -13,15 +13,24 @@ generator json {
     // (./ -> relative to schema, or an importable path to require() it)
 }
 
+// Local
 // datasource db {
 //     provider = "postgres"
 //     url      = env("DATABASE_URL")
 // }
+
+// Vercel Postgres
+// datasource db {
+//     provider          = "postgresql"
+//     url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
+//     directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+//     shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+// }
+
 datasource db {
-    provider          = "postgresql"
-    url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
-    directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
-    shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
 }
 
 model Series {
@@ -39,6 +48,9 @@ model Series {
     updatedAt      DateTime?     @updatedAt
     follow         follow[]
     like           like[]
+
+    @@index([organizationId])
+    @@index([publisherId])
 }
 
 model Event {
@@ -74,6 +86,11 @@ model Event {
     seriesId       String?
     follow         follow[]
     like           like[]
+
+    @@index([publisherId])
+    @@index([venueId])
+    @@index([organizationId])
+    @@index([seriesId])
 }
 
 model Race {
@@ -101,6 +118,9 @@ model Race {
     // compId      String?
     follow           follow[]
     like             like[]
+
+    @@index([eventId])
+    @@index([publisherId])
 }
 
 model Comp {
@@ -129,6 +149,8 @@ model Comp {
     like        like[]
 
     @@index([compId, eventId])
+    @@index([publisherId])
+    @@index([eventId])
 }
 
 model Result {
@@ -160,6 +182,9 @@ model Result {
     updatedAt      DateTime? @updatedAt
 
     @@index([raceId])
+    @@index([publisherId])
+    @@index([eventId])
+    @@index([compId])
 }
 
 model Organization {
@@ -179,6 +204,8 @@ model Organization {
     updatedAt   DateTime? @updatedAt
     follow      follow[]
     like        like[]
+
+    @@index([ownerId])
 }
 
 model follow {
@@ -198,6 +225,13 @@ model follow {
     compId         String?
     updatedAt      DateTime      @updatedAt
     createdAt      DateTime      @default(now())
+
+    @@index([userId])
+    @@index([seriesId])
+    @@index([eventId])
+    @@index([organizationId])
+    @@index([raceId])
+    @@index([compId])
 }
 
 model like {
@@ -217,6 +251,13 @@ model like {
     compId         String?
     updatedAt      DateTime      @updatedAt
     createdAt      DateTime      @default(now())
+
+    @@index([userId])
+    @@index([seriesId])
+    @@index([eventId])
+    @@index([organizationId])
+    @@index([raceId])
+    @@index([compId])
 }
 
 model Venue {
@@ -231,6 +272,8 @@ model Venue {
     Event       Event[]
     createdAt   DateTime? @default(now())
     updatedAt   DateTime? @updatedAt
+
+    @@index([publisherId])
 }
 
 model User {
@@ -310,4 +353,6 @@ model Article {
     bogus     String?
     createdAt DateTime? @default(now())
     updatedAt DateTime? @updatedAt
+
+    @@index([userId])
 }

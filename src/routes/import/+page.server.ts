@@ -37,7 +37,7 @@ export const actions: Actions = {
 		// check for duplicates etc.. before
 
 		const texted = await file.text()
-		console.log('texted: ', texted)
+		// console.log('texted: ', texted)
 		parse(texted, {
 			complete: async (results) => {
 				console.log('complete: papaparse')

@@ -139,14 +139,20 @@ export const Populate = ({ data, userId, file, orgId }) => {
 	}
 
 	addTables()
-
+	// planetsacle
+	// pw
+	// pscale_pw_6H7RyalfWwRuR0JVeMPYdcMt8CY4zltNM5TkfV778EZ
+	// un
+	// wp8gz0f6goz039uxo4c9
 	async function addTables() {
 		console.log('addTables: ')
 		try {
 			// await prisma.event.upsert(upsertObj())
 			console.log('trying upsert')
-			await prisma.event.upsert(upsertObj())
-			console.log('upsert return: ')
+			console.time('trying upsert')
+			const p = await prisma.event.upsert(upsertObj())
+			console.timeEnd('trying upsert')
+			console.log('upsert return: ', p.name)
 		} catch (error: any) {
 			console.log('Import Error: ', error.message)
 		}
