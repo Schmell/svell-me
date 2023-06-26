@@ -139,11 +139,7 @@ export const Populate = ({ data, userId, file, orgId }) => {
 	}
 
 	addTables()
-	// planetsacle
-	// pw
-	// pscale_pw_6H7RyalfWwRuR0JVeMPYdcMt8CY4zltNM5TkfV778EZ
-	// un
-	// wp8gz0f6goz039uxo4c9
+
 	async function addTables() {
 		console.log('addTables: ')
 		try {
