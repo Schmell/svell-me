@@ -46,6 +46,46 @@ export const Populate = ({ data, userId, file, orgId }) => {
 	const { eventeid, uniqueIdString } = event
 	console.log('populate with event: ')
 
+	function eventCreate() {
+		const eventObj = {
+			...event,
+
+			Publisher: {
+				connect: { id: userId }
+			},
+			Organization: {
+				connect: { id: orgId }
+			},
+			Venue: {
+				connectOrCreate: {
+					where: { name: event.venueName },
+					create: {
+						name: event.venueName,
+						email: event.rest.venueemail,
+						website: event.rest.venuewebsite,
+						burgee: event.rest.venueburgee
+					}
+				}
+			}
+		}
+		return {
+			// data: upObj
+			where: { uniqueIdString: uniqueIdString },
+			update: {},
+			create: event
+		}
+	}
+
+	function racesCreate() {
+		const racesObj = {}
+		return {
+			// data: upObj
+			where: { uniqueIdString: uniqueIdString },
+			update: {},
+			create: event
+		}
+	}
+
 	function upsertObj() {
 		const upObj = {
 			...event,
@@ -148,6 +188,7 @@ export const Populate = ({ data, userId, file, orgId }) => {
 			console.time('trying upsert')
 			const p = await prisma.event.upsert(upsertObj())
 			console.timeEnd('trying upsert')
+
 			console.log('upsert return: ', p.name)
 		} catch (error: any) {
 			console.log('Import Error: ', error.message)
