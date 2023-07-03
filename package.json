@@ -4,7 +4,6 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
-		"postinstall": "prisma generate",
 		"build": "prisma generate && vite build",
 		"preview": "vite preview",
 		"test": "playwright test",
