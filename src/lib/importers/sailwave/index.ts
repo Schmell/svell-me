@@ -46,6 +46,11 @@ export const Populate = ({ data, userId, file, orgId }) => {
 	const { eventeid, uniqueIdString } = event
 	console.log('populate with event: ')
 
+	// The query needs to be broken into smaller chunkcs to work in serverless
+	// Instead of one big upsert we need to check for duplicates first
+	// we can probably add the first chunk easy with event, org, venue which are all flat
+	// Not to sure how to do the races as i had comps and results nested
+
 	function eventCreate() {
 		const eventObj = {
 			...event,
@@ -77,12 +82,21 @@ export const Populate = ({ data, userId, file, orgId }) => {
 	}
 
 	function racesCreate() {
-		const racesObj = {}
+		// this should maybe hit a createMany
+		const racesArray = [
+			blw.getRaces(uniqueIdString).map((race) => {
+				return {
+					...race,
+					Event: { connect: event.uniqueIdString },
+					Publisher: {
+						connect: { id: userId }
+					}
+				}
+			})
+		]
+
 		return {
-			// data: upObj
-			where: { uniqueIdString: uniqueIdString },
-			update: {},
-			create: event
+			data: racesArray
 		}
 	}
 

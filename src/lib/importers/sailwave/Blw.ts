@@ -2,6 +2,7 @@
 // import { parse } from 'papaparse'
 import { createId } from '@paralleldrive/cuid2'
 import { formatDate, formatTime } from '../../utils/formatters'
+import { Prisma } from '@prisma/client'
 
 interface IBlw {
 	// user: User | null | undefined;
@@ -13,6 +14,34 @@ interface IBlw {
 interface chromeFile extends File {
 	lastModifiedDate?: string
 }
+
+// const RaceType = Prisma = {}
+
+// type Race = {
+// 	raceId: string
+// 	uniqueRaceString: string
+// 	name: string
+// 	starts: {}
+// 	rank: string
+// 	date: string
+// 	time: string
+// 	notes: string
+// 	sailed: string
+// 	resultColumns: {}
+// 	// /// [raceRest]
+// 	rest: {}
+// 	// Event            Event?    @relation(fields: [eventId], references: [id])
+// 	// eventId          String?
+// 	// Publisher        User?     @relation(fields: [publisherId], references: [id])
+// 	// publisherId      String?
+// 	// Comps            Comp[]
+// 	// Results          Result[]
+// 	// createdAt        DateTime? @default(now())
+// 	// updatedAt        DateTime? @updatedAt
+// 	// // compId      String?
+// 	// follow           follow[]
+// 	// like             like[]
+// }
 
 export default class Blw {
 	// // user: User | null | undefined;
@@ -137,7 +166,7 @@ export default class Blw {
 		return fleets
 	}
 
-	getRaces(uniqueIdString) {
+	getRaces(uniqueIdString: string) {
 		// new object to be returned
 		let raceData: any = []
 		// Find all raceids by getting known csv row
