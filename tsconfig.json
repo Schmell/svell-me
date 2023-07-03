@@ -10,7 +10,7 @@
 		"sourceMap": true,
 		"strict": true,
 		"noImplicitAny": false,
-		"ignoreDeprecations": "5.0",
+		
 		"useDefineForClassFields": true,
 	},
 	
