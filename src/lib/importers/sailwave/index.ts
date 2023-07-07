@@ -276,12 +276,12 @@ export const Populate = ({ data, userId, file, orgId }) => {
 			compsCreate().map(async (comp) => {
 				await prisma.comp.upsert(comp)
 			})
-			racesCreate().map((races) => {
+			racesCreate().map(async (races) => {
 				races.map(async (race) => {
 					await prisma.race.create({ data: race })
 				})
 			})
-			resultsCreate().map((results) => {
+			resultsCreate().map(async (results) => {
 				results.map(async (result) => {
 					await prisma.result.create({ data: result })
 				})
