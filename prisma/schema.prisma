@@ -1,358 +1,299 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-    provider = "prisma-client-js"
-    // output   = "./generated/prisma-client-js"
+  provider = "prisma-client-js"
 }
 
-// Always after the prisma-client-js generator
 generator json {
-    provider  = "prisma-json-types-generator"
-    namespace = "PrismaJson"
-    // clientOutput = "<finds it automatically>"
-    // (./ -> relative to schema, or an importable path to require() it)
+  provider  = "prisma-json-types-generator"
+  namespace = "PrismaJson"
 }
 
-// Local
-// datasource db {
-//     provider = "postgres"
-//     url      = env("LOCAL_DATABASE_UR")
-// }
-
-// Vercel Postgres
 datasource db {
-    provider          = "postgresql"
-    url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
-    directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
-    shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+  provider          = "postgresql"
+  url               = env("POSTGRES_PRISMA_URL")
+  directUrl         = env("POSTGRES_URL_NON_POOLING")
+  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
 }
-
-// datasource db {
-//     provider     = "mysql"
-//     url          = env("PLANETSCALE_DATABASE_URL")
-//     relationMode = "prisma"
-// }
 
 model Series {
-    id             String        @id @unique @default(cuid())
-    name           String
-    description    String?
-    rest           Json?
-    organizationId String?
-    Org            Organization? @relation(fields: [organizationId], references: [id])
-    publisherId    String?
-    Publisher      User?         @relation(fields: [publisherId], references: [id])
-    Venues         Venue[]
-    Events         Event[]
-    createdAt      DateTime?     @default(now())
-    updatedAt      DateTime?     @updatedAt
-    follow         follow[]
-    like           like[]
-
-    @@index([organizationId])
-    @@index([publisherId])
+  id             String        @id @unique @default(cuid())
+  name           String
+  description    String?
+  rest           Json?
+  organizationId String?
+  publisherId    String?
+  createdAt      DateTime?     @default(now())
+  updatedAt      DateTime?     @updatedAt
+  Events         Event[]
+  Org            Organization? @relation(fields: [organizationId], references: [id])
+  Publisher      User?         @relation(fields: [publisherId], references: [id])
+  follow         follow[]
+  like           like[]
+  Venues         Venue[]       @relation("SeriesToVenue")
 }
 
 model Event {
-    id             String        @id @default(cuid())
-    eventeid       String
-    uniqueIdString String        @unique
-    name           String
-    eventwebsite   String?
-    email          String?
-    venueName      String?
-    description    String?
-    titleImage     String?
-    public         Boolean       @default(true)
-    /// [fileInfo]
-    fileInfo       Json?
-    /// [resultColumns]
-    resultColumns  Json? //     @default("{\"points\": false, \"nett\": false, \"total\": false, \"skipper\": false, \"place\": false}")
-    /// [eventRest]
-    rest           Json?
-    publisherId    String?
-    Publisher      User?         @relation(fields: [publisherId], references: [id])
-    venueId        String?
-    Venue          Venue?        @relation(fields: [venueId], references: [id])
-    organizationId String?
-    Organization   Organization? @relation(fields: [organizationId], references: [id])
-    // Series         Series[]
-    Races          Race[]
-    Results        Result[]
-    Comps          Comp[]
-    createdAt      DateTime?     @default(now())
-    updatedAt      DateTime?     @updatedAt
-    Series         Series?       @relation(fields: [seriesId], references: [id])
-    seriesId       String?
-    follow         follow[]
-    like           like[]
-
-    @@index([publisherId])
-    @@index([venueId])
-    @@index([organizationId])
-    @@index([seriesId])
+  id             String        @id @default(cuid())
+  eventeid       String
+  uniqueIdString String        @unique
+  name           String
+  eventwebsite   String?
+  venueName      String?
+  description    String?
+  titleImage     String?
+  public         Boolean       @default(true)
+  /// [fileInfo]
+  fileInfo       Json?
+  /// [resultColumns]
+  resultColumns  Json?
+  /// [eventRest]
+  rest           Json?
+  publisherId    String?
+  venueId        String?
+  organizationId String?
+  createdAt      DateTime?     @default(now())
+  updatedAt      DateTime?     @updatedAt
+  seriesId       String?
+  email          String?
+  Comp           Comp[]
+  Organization   Organization? @relation(fields: [organizationId], references: [id])
+  Publisher      User?         @relation(fields: [publisherId], references: [id])
+  Series         Series?       @relation(fields: [seriesId], references: [id])
+  Venue          Venue?        @relation(fields: [venueId], references: [id])
+  Races          Race[]
+  Results        Result[]
+  follow         follow[]
+  like           like[]
 }
 
 model Race {
-    id               String    @id @unique @default(cuid())
-    raceId           String?
-    uniqueRaceString String?
-    name             String?
-    starts           Json?
-    rank             String?
-    date             String?
-    time             String?
-    notes            String?
-    sailed           String?
-    resultColumns    Json?
-    /// [raceRest]
-    rest             Json?
-    Event            Event?    @relation(fields: [eventId], references: [id])
-    eventId          String?
-    Publisher        User?     @relation(fields: [publisherId], references: [id])
-    publisherId      String?
-    Comps            Comp[]
-    Results          Result[]
-    createdAt        DateTime? @default(now())
-    updatedAt        DateTime? @updatedAt
-    // compId      String?
-    follow           follow[]
-    like             like[]
-
-    @@index([eventId])
-    @@index([publisherId])
+  id               String    @id @unique @default(cuid())
+  raceId           String?
+  uniqueRaceString String?
+  name             String?
+  starts           Json?
+  rank             String?
+  date             String?
+  time             String?
+  notes            String?
+  sailed           String?
+  resultColumns    Json?
+  /// [raceRest]
+  rest             Json?
+  eventId          String?
+  publisherId      String?
+  createdAt        DateTime? @default(now())
+  updatedAt        DateTime? @updatedAt
+  Event            Event?    @relation(fields: [eventId], references: [id])
+  Publisher        User?     @relation(fields: [publisherId], references: [id])
+  Results          Result[]
+  follow           follow[]
+  like             like[]
+  Comps            Comp[]    @relation("CompToRace")
 }
 
 model Comp {
-    id          String    @id @default(cuid())
-    compId      String    @unique
-    club        String?
-    boat        String?
-    skipper     String? // helmname
-    fleet       String?
-    division    String?
-    rating      String?
-    rank        String?
-    nett        String?
-    total       String?
-    /// [compRest]
-    rest        Json?
-    Publisher   User?     @relation(fields: [publisherId], references: [id])
-    publisherId String?
-    // Event       Event?    @relation(fields: [eventId], references: [id])
-    // eventId     String?
-    Events      Event[]
-    Results     Result[]
-    Races       Race[]
-    createdAt   DateTime? @default(now())
-    updatedAt   DateTime? @updatedAt
-    follow      follow[]
-    like        like[]
+  id          String    @id @default(cuid())
+  compId      String    @unique
+  club        String?
+  boat        String?
+  skipper     String?
+  fleet       String?
+  division    String?
+  rating      String?
+  rank        String?
+  nett        String?
+  total       String?
+  /// [compRest]
+  rest        Json?
+  publisherId String?
+  eventId     String?
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
+  Event       Event?    @relation(fields: [eventId], references: [id])
+  Publisher   User?     @relation(fields: [publisherId], references: [id])
+  Results     Result[]
+  follow      follow[]
+  like        like[]
+  Races       Race[]    @relation("CompToRace")
 
-    @@index([publisherId])
+  @@index([compId, eventId])
 }
 
 model Result {
-    id         String  @id @unique @default(cuid())
-    resultId   String?
-    finish     String?
-    start      String?
-    // needs to be number
-    points     String?
-    position   String?
-    discard    String?
-    corrected  String?
-    resultType String?
+  id             String    @id @unique @default(cuid())
+  resultId       String?
+  finish         String?
+  start          String?
+  points         String?
+  position       String?
+  discard        String?
+  corrected      String?
+  resultType     String?
+  elasped        String?
+  supposedRating String?
+  elapsedWin     String?
+  ratingWin      String?
+  rrset          String?
+  publisherId    String
+  eventId        String?
+  compId         String?
+  raceId         String?
+  createdAt      DateTime? @default(now())
+  updatedAt      DateTime? @updatedAt
+  Comp           Comp?     @relation(fields: [compId], references: [id])
+  Event          Event?    @relation(fields: [eventId], references: [id])
+  Publisher      User      @relation(fields: [publisherId], references: [id])
+  Race           Race?     @relation(fields: [raceId], references: [id])
 
-    elasped        String?
-    supposedRating String?
-    elapsedWin     String?
-    ratingWin      String?
-    rrset          String?
-    Publisher      User      @relation(fields: [publisherId], references: [id])
-    publisherId    String
-    Event          Event?    @relation(fields: [eventId], references: [id])
-    eventId        String?
-    Comp           Comp?     @relation(fields: [compId], references: [id])
-    compId         String?
-    Race           Race?     @relation(fields: [raceId], references: [id])
-    raceId         String?
-    createdAt      DateTime? @default(now())
-    updatedAt      DateTime? @updatedAt
-
-    @@index([raceId])
-    @@index([publisherId])
-    @@index([eventId])
-    @@index([compId])
+  @@index([raceId])
 }
 
 model Organization {
-    id          String    @id @default(cuid())
-    name        String    @unique
-    description String?
-    tag         String?
-    website     String?
-    email       String?
-    contact     Json?
-    titleImage  String?
-    ownerId     String?
-    Owner       User?     @relation(fields: [ownerId], references: [id])
-    Series      Series[]
-    Events      Event[]
-    createdAt   DateTime? @default(now())
-    updatedAt   DateTime? @updatedAt
-    follow      follow[]
-    like        like[]
-
-    @@index([ownerId])
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  tag         String?
+  website     String?
+  email       String?
+  contact     Json?
+  titleImage  String?
+  ownerId     String?
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
+  Events      Event[]
+  Owner       User?     @relation(fields: [ownerId], references: [id])
+  Series      Series[]
+  follow      follow[]
+  like        like[]
 }
 
 model follow {
-    id             String        @id @unique @default(cuid())
-    User           User          @relation(fields: [userId], references: [id])
-    userId         String
-    type           String // series | event | race | comp | organization
-    Series         Series?       @relation(fields: [seriesId], references: [id])
-    seriesId       String?
-    Event          Event?        @relation(fields: [eventId], references: [id])
-    eventId        String?
-    Organization   Organization? @relation(fields: [organizationId], references: [id])
-    organizationId String?
-    Race           Race?         @relation(fields: [raceId], references: [id])
-    raceId         String?
-    Comp           Comp?         @relation(fields: [compId], references: [id])
-    compId         String?
-    updatedAt      DateTime      @updatedAt
-    createdAt      DateTime      @default(now())
-
-    @@index([userId])
-    @@index([seriesId])
-    @@index([eventId])
-    @@index([organizationId])
-    @@index([raceId])
-    @@index([compId])
+  id             String        @id @unique @default(cuid())
+  userId         String
+  type           String
+  seriesId       String?
+  eventId        String?
+  organizationId String?
+  raceId         String?
+  compId         String?
+  updatedAt      DateTime      @updatedAt
+  createdAt      DateTime      @default(now())
+  Comp           Comp?         @relation(fields: [compId], references: [id])
+  Event          Event?        @relation(fields: [eventId], references: [id])
+  Organization   Organization? @relation(fields: [organizationId], references: [id])
+  Race           Race?         @relation(fields: [raceId], references: [id])
+  Series         Series?       @relation(fields: [seriesId], references: [id])
+  User           User          @relation(fields: [userId], references: [id])
 }
 
 model like {
-    id             String        @id @unique @default(cuid())
-    User           User          @relation(fields: [userId], references: [id])
-    userId         String
-    type           String // series | event | race | comp | organization
-    Series         Series?       @relation(fields: [seriesId], references: [id])
-    seriesId       String?
-    Event          Event?        @relation(fields: [eventId], references: [id])
-    eventId        String?
-    Organization   Organization? @relation(fields: [organizationId], references: [id])
-    organizationId String?
-    Race           Race?         @relation(fields: [raceId], references: [id])
-    raceId         String?
-    Comp           Comp?         @relation(fields: [compId], references: [id])
-    compId         String?
-    updatedAt      DateTime      @updatedAt
-    createdAt      DateTime      @default(now())
-
-    @@index([userId])
-    @@index([seriesId])
-    @@index([eventId])
-    @@index([organizationId])
-    @@index([raceId])
-    @@index([compId])
+  id             String        @id @unique @default(cuid())
+  userId         String
+  type           String
+  seriesId       String?
+  eventId        String?
+  organizationId String?
+  raceId         String?
+  compId         String?
+  updatedAt      DateTime      @updatedAt
+  createdAt      DateTime      @default(now())
+  Comp           Comp?         @relation(fields: [compId], references: [id])
+  Event          Event?        @relation(fields: [eventId], references: [id])
+  Organization   Organization? @relation(fields: [organizationId], references: [id])
+  Race           Race?         @relation(fields: [raceId], references: [id])
+  Series         Series?       @relation(fields: [seriesId], references: [id])
+  User           User          @relation(fields: [userId], references: [id])
 }
 
 model Venue {
-    id          String    @id @unique @default(cuid())
-    name        String    @unique
-    website     String?
-    email       String?
-    burgee      String?
-    publisherId String?
-    Publisher   User?     @relation(fields: [publisherId], references: [id])
-    Series      Series[]
-    Event       Event[]
-    createdAt   DateTime? @default(now())
-    updatedAt   DateTime? @updatedAt
-
-    @@index([publisherId])
+  id          String    @id @unique @default(cuid())
+  name        String    @unique
+  website     String?
+  email       String?
+  burgee      String?
+  publisherId String?
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
+  Event       Event[]
+  Publisher   User?     @relation(fields: [publisherId], references: [id])
+  Series      Series[]  @relation("SeriesToVenue")
 }
 
 model User {
-    id           String         @id @unique
-    name         String
-    username     String         @unique
-    email        String?        @unique
-    avatar       String?
-    session      Session[]
-    Key          Key[]
-    Article      Article[]
-    Series       Series[]
-    Event        Event[]
-    Organization Organization[]
-    Comp         Comp[]
-    Venue        Venue[]
-    UserSettings UserSettings?
-    Race         Race[]
-    Result       Result[]
-    follow       follow[]
-    like         like[]
+  id           String         @id @unique
+  name         String
+  username     String         @unique
+  email        String?        @unique
+  avatar       String?
+  Article      Article[]
+  Comp         Comp[]
+  Event        Event[]
+  Organization Organization[]
+  Race         Race[]
+  Result       Result[]
+  Series       Series[]
+  UserSettings UserSettings?
+  Venue        Venue[]
+  follow       follow[]
+  Key          Key[]
+  like         like[]
+  session      Session[]
 
-    @@map("user")
+  @@map("user")
 }
 
 model UserSettings {
-    id       String  @id @unique @default(cuid())
-    theme    String?
-    language Lang?   @default(english)
-    user     User?   @relation(fields: [userId], references: [id])
-    userId   String? @unique
-}
-
-enum Lang {
-    english
-    french
-    spanish
-    german
-    dutch
-    swedish
-    russian
-    chinese
-    japanese
-    norweigen
-    italian
-    portugese
+  id       String  @id @unique @default(cuid())
+  theme    String?
+  language Lang?   @default(english)
+  userId   String? @unique
+  user     User?   @relation(fields: [userId], references: [id])
 }
 
 model Session {
-    id             String @id @unique
-    user_id        String
-    active_expires BigInt
-    idle_expires   BigInt
-    user           User   @relation(references: [id], fields: [user_id], onDelete: Cascade)
+  id             String @id @unique
+  user_id        String
+  active_expires BigInt
+  idle_expires   BigInt
+  user           User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-    @@index([user_id])
-    @@map("session")
+  @@index([user_id])
+  @@map("session")
 }
 
 model Key {
-    id              String  @id @unique
-    hashed_password String?
-    user_id         String
-    primary         Boolean
-    user            User    @relation(references: [id], fields: [user_id], onDelete: Cascade)
+  id              String  @id @unique
+  hashed_password String?
+  user_id         String
+  primary         Boolean
+  user            User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-    @@index([user_id])
-    @@map("key")
+  @@index([user_id])
+  @@map("key")
 }
 
 model Article {
-    id        String    @id @unique @default(cuid())
-    title     String
-    content   String?
-    user      User?     @relation(fields: [userId], references: [id])
-    userId    String?
-    bogus     String?
-    createdAt DateTime? @default(now())
-    updatedAt DateTime? @updatedAt
+  id        String    @id @unique @default(cuid())
+  title     String
+  content   String?
+  userId    String?
+  bogus     String?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  user      User?     @relation(fields: [userId], references: [id])
+}
 
-    @@index([userId])
+enum Lang {
+  english
+  french
+  spanish
+  german
+  dutch
+  swedish
+  russian
+  chinese
+  japanese
+  norweigen
+  italian
+  portugese
 }

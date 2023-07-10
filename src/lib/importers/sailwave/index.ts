@@ -110,7 +110,7 @@ export const Populate = ({ data, userId, file, orgId }) => {
 	}
 
 	function compsCreate() {
-		const comps = blw.getComps().map(async (comp) => {
+		const comps = blw.getComps().map((comp) => {
 			// console.log('comp: ', comp)
 			// need to connect event somehow, because a comp can have multiple events
 			return {

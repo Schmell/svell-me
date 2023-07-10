@@ -62,10 +62,13 @@ export default class Blw {
 		})
 		compBoats.sort().forEach((compBoat: any) => {
 			let competitor = {
-				compId: ''
+				compId: '',
+				uniqueCompId: ''
 			}
 
 			competitor.compId = `${compBoat[2]}-${this.data.cuid}`
+			// also need a uniqueCompId for connecting comps to users
+			// competitor.uniqueCompId = ""
 			let compRows = this.data.filter((item: any) => {
 				var regex = new RegExp(`^comp`, 'g')
 				return item[0].match(regex) && item[2] === compBoat[2]
