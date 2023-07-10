@@ -68,7 +68,8 @@ export const Populate = ({ data, userId, file, orgId }) => {
 						name: event.venueName,
 						email: event.rest.venueemail,
 						website: event.rest.venuewebsite,
-						burgee: event.rest.venueburgee
+						burgee: event.rest.venueburgee,
+						Publisher: { connect: { id: userId } }
 					}
 				}
 			}
@@ -87,7 +88,7 @@ export const Populate = ({ data, userId, file, orgId }) => {
 		const compList = comps.map((comp) => {
 			return { compId: comp.compId }
 		})
-		// console.log('compList: ', compList)
+
 		const racesArray = [
 			blw.getRaces(uniqueIdString).map((race) => {
 				return {
@@ -109,12 +110,25 @@ export const Populate = ({ data, userId, file, orgId }) => {
 	}
 
 	function compsCreate() {
-		const comps = blw.getComps().map((comp) => {
+		const comps = blw.getComps().map(async (comp) => {
 			// console.log('comp: ', comp)
 			// need to connect event somehow, because a comp can have multiple events
 			return {
 				where: { compId: comp.compId },
-				update: {},
+				update: {
+					club: comp.club,
+					boat: comp.boat,
+					skipper: comp.helmname,
+					fleet: comp.fleet,
+					division: comp.division,
+					rank: comp.rank,
+					nett: comp.nett,
+					total: comp.total,
+					rest: comp,
+					Events: {
+						connect: { uniqueIdString: uniqueIdString }
+					}
+				},
 				create: {
 					compId: comp.compId,
 					club: comp.club,
@@ -279,12 +293,15 @@ export const Populate = ({ data, userId, file, orgId }) => {
 			racesCreate().map(async (races) => {
 				races.map(async (race) => {
 					await prisma.race.create({ data: race })
+					// console.log('race: ', race)
 				})
 			})
 			resultsCreate().map(async (results) => {
-				results.map(async (result) => {
-					await prisma.result.create({ data: result })
-				})
+				// results.map(async (result) => {
+				// 	await prisma.result.create({ data: result })
+				// })
+				// console.log('results: ', results)
+				// await prisma.result.createMany({ data: results })
 			})
 
 			console.timeEnd('trying upsert')

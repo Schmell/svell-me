@@ -6,7 +6,7 @@
 	console.log('form: ', form)
 </script>
 
-<Page>
+<Page title="Login">
 	<form method="POST">
 		<hgroup>
 			<h2>Login</h2>
