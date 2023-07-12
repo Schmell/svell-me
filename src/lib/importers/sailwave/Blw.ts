@@ -79,11 +79,11 @@ export default class Blw {
 			})
 			compData.push(competitor)
 		}) //each compBoats
-		// const sorted = compData!.sort((a: any, b: any) => {
-		// 	return a.boat - b.boat
-		// })
+		const sorted = compData!.sort((a: any, b: any) => {
+			return a.boat - b.boat
+		})
 
-		return compData
+		return sorted
 	} // getComps
 
 	getResults(raceId) {

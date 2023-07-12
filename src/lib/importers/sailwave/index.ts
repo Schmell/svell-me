@@ -93,9 +93,9 @@ export const Populate = ({ data, userId, file, orgId }) => {
 			blw.getRaces(uniqueIdString).map((race) => {
 				return {
 					...race,
-					Comps: {
-						connect: compList
-					},
+					// Comps: {
+					// 	connect: compList
+					// },
 					Event: {
 						connect: { uniqueIdString: uniqueIdString }
 					},
@@ -140,7 +140,9 @@ export const Populate = ({ data, userId, file, orgId }) => {
 					nett: comp.nett,
 					total: comp.total,
 					rest: comp,
-					// Events: ???
+					Events: {
+						connect: { uniqueIdString: uniqueIdString }
+					},
 					Publisher: {
 						connect: { id: userId }
 					}
@@ -151,7 +153,7 @@ export const Populate = ({ data, userId, file, orgId }) => {
 	}
 
 	function resultsCreate() {
-		const races = blw.getComps()
+		// const races = blw.getComps()
 		return blw.getRaces(uniqueIdString).map((race) => {
 			return blw.getResults(race.raceId).map((result) => {
 				//  Note convert to numbers
@@ -287,19 +289,21 @@ export const Populate = ({ data, userId, file, orgId }) => {
 			// const p = await prisma.event.upsert(upsertObj())
 			const p = await prisma.event.upsert(eventCreate())
 
-			compsCreate().map(async (comp) => {
+			await compsCreate().map(async (comp) => {
 				await prisma.comp.upsert(comp)
 			})
+
 			racesCreate().map(async (races) => {
-				races.map(async (race) => {
+				await races.map(async (race) => {
 					await prisma.race.create({ data: race })
 					// console.log('race: ', race)
 				})
 			})
+
 			resultsCreate().map(async (results) => {
-				// results.map(async (result) => {
-				// 	await prisma.result.create({ data: result })
-				// })
+				await results.map(async (result) => {
+					await prisma.result.create({ data: result })
+				})
 				// console.log('results: ', results)
 				// await prisma.result.createMany({ data: results })
 			})

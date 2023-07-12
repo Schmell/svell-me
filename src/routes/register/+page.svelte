@@ -8,7 +8,7 @@
 	// console.log('form: ', form)
 </script>
 
-<Page>
+<Page title="Register">
 	<form method="POST">
 		<hgroup>
 			<h2>Register</h2>
@@ -20,10 +20,10 @@
 		<Input name="name" {form} value="" />
 		<Input name="username" {form} value="" />
 		<Input name="email" type="email" {form} value="" />
-		<Input name="avatar" {form} value="" />
+		<Input name="avatar" {form} />
 		<Input name="password" type="password" {form} value="" />
 		<Input name="passwordConfirm" label="Confirm Password" type="password" {form} value="" />
-		<Check name="terms" {form} />
+		<!-- <Check name="terms" {form} /> -->
 		<Button type="submit">Register</Button>
 	</form>
 </Page>

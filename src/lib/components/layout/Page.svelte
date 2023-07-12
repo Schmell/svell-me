@@ -6,7 +6,7 @@
 </script>
 
 <div>
-	<SubNav {title} />
+	<SubNav {title}><div slot="trailing"><slot name="trailing" /></div></SubNav>
 
 	<div class="absolute">
 		<div class=" mb-48 w-full h-full fixed top-0 overflow-scroll {className}">

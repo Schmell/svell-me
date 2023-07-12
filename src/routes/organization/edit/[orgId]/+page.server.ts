@@ -34,7 +34,7 @@ const orgValidation = z.object({
 
 export const actions: Actions = {
 	default: async ({ request, locals, params, url }) => {
-		// console.log('params: ', params)
+		console.log('params: ', params)
 		const formData = Object.fromEntries(await request.formData()) as Record<string, string>
 		const uid: any = await locals.validate()
 
@@ -53,6 +53,7 @@ export const actions: Actions = {
 					}
 				}
 			})
+			// throw redirect(300)
 		} catch (error: any) {
 			console.log('error: ', error)
 			const { fieldErrors: errors } = error.flatten()
@@ -64,6 +65,8 @@ export const actions: Actions = {
 		}
 		const from = url.searchParams.get('from')
 		console.log('from: ', from)
-		// throw redirect(300, `/${from}`)
+		if (from) {
+			throw redirect(303, `/${from}`)
+		}
 	}
 }

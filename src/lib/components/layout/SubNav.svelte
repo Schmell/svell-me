@@ -3,9 +3,10 @@
 </script>
 
 <div class="sub-nav">
-	<div class="flex h-full items-center">
+	<div class="h-full items-center">
 		<div class="text-3xl font-semibold select-none">{@html title}</div>
 	</div>
+	<div class="mr-4"><slot name="trailing" /></div>
 </div>
 
 <style>
@@ -14,6 +15,7 @@
 		@apply text-primary;
 		display: flex;
 		justify-content: space-between;
+		align-items: center;
 		position: fixed;
 		z-index: 10;
 		padding-right: 2em;

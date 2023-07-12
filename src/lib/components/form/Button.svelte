@@ -9,7 +9,7 @@
 {#if position === 'float'}
 	<button
 		{type}
-		class={`btn btn-primary mt-4 shadow-lg px-10 py-8 rounded-full fixed bottom-14 right-8 ${clazz}`}
+		class={`btn btn-primary mt-4 shadow-lg px-10 rounded-full fixed bottom-24 right-8 ${clazz}`}
 	>
 		<slot />
 	</button>

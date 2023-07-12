@@ -4,11 +4,11 @@
 	import Input from '$lib/components/form/Input.svelte'
 	import type { ActionData, PageData } from './$types'
 	import Textarea from '$lib/components/form/Textarea.svelte'
-	// import { afterNavigate, beforeNavigate } from '$app/navigation'
 	export let form: ActionData
 	export let data: PageData
+	// export let from = '' // redirect back
 
-	const { user, org } = data
+	$: ({ user, org } = data)
 </script>
 
 <Page title={org?.name === 'New Organization' ? 'Add a new Organization' : 'Edit Organization'}>

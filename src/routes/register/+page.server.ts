@@ -60,7 +60,7 @@ const registerSchema = z
 export const actions: Actions = {
 	default: async ({ request }) => {
 		const formData = Object.fromEntries(await request.formData()) as Record<string, string>
-		console.log('formData: ', formData)
+		// console.log('formData: ', formData)
 		try {
 			const result = registerSchema.parse(formData)
 			await auth.createUser({

@@ -9,9 +9,17 @@
 	export let data: PageData
 
 	$: ({ events } = data)
+	$: console.log('events: ', events)
 </script>
 
 <Page title="Your Events">
+	<div slot="trailing">
+		<a class="btn btn-outline btn-xs " href="/import">Import</a>
+	</div>
+	{#if !events[0]}
+		<h1 class="text-xl font-semibold">You do not have any events yet.</h1>
+		<a class="link-primary hover:link-hover" href="/import">Upload events here</a>
+	{/if}
 	{#each events as event}
 		<ItemCard title={event.name} href="/events/{event.id}">
 			<div slot="top-right">

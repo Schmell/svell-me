@@ -93,7 +93,9 @@ model Race {
 
 model Comp {
   id          String    @id @default(cuid())
-  compId      String    @unique
+  compId      String    @unique // right now this will only be unique on the same event
+  // uniqueCompId String @unique // need to generate a string that will remain unique from event to event
+  // problem is that lots of events will only have one info (boat or skipper or etc.)
   club        String?
   boat        String?
   skipper     String?
@@ -106,17 +108,16 @@ model Comp {
   /// [compRest]
   rest        Json?
   publisherId String?
-  eventId     String?
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @updatedAt
-  Event       Event?    @relation(fields: [eventId], references: [id])
+  Events      Event[]
   Publisher   User?     @relation(fields: [publisherId], references: [id])
   Results     Result[]
   follow      follow[]
   like        like[]
   Races       Race[]    @relation("CompToRace")
 
-  @@index([compId, eventId])
+  @@index([compId])
 }
 
 model Result {
