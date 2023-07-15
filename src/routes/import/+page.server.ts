@@ -40,7 +40,7 @@ export const actions: Actions = {
 		// console.log('texted: ', texted)
 		parse(texted, {
 			complete: async (results) => {
-				console.log('complete: papaparse')
+				// console.log('complete: papaparse')
 				const uid = await input.locals.validate()
 				const duplicates = await CheckForDuplicates({
 					data: results.data,
@@ -52,7 +52,7 @@ export const actions: Actions = {
 				if (duplicates !== null) {
 					console.log('duplicates: ', duplicates)
 				}
-				console.log('parse complete ')
+				// console.log('parse complete ')
 				Populate({ data: results.data, userId: uid?.userId, file: file, orgId: org })
 			},
 			error: (status, err) => {
@@ -64,7 +64,7 @@ export const actions: Actions = {
 		// })
 		// history.back()
 		// goto('/events')
-		console.log('redirect: ')
+		// console.log('redirect: ')
 		throw redirect(300, '/events')
 		// return { status: 201 }
 	}

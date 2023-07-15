@@ -43,9 +43,7 @@ export const Populate = ({ data, userId, file, orgId }) => {
 	// Make new Blw class
 	const blw = new Blw({ data, file })
 	const event = blw.getEvent()
-	// console.log('event: ', event)
 	const { eventeid, uniqueIdString } = event
-	console.log('populate with event: ')
 
 	// The query needs to be broken into smaller chunkcs to work in serverless
 	// Instead of one big upsert we need to check for duplicates first
@@ -215,7 +213,6 @@ export const Populate = ({ data, userId, file, orgId }) => {
 						},
 						Comps: {
 							connectOrCreate: blw.getComps().map((comp) => {
-								// console.log('comp: ', comp)
 								return {
 									where: { compId: comp.compId },
 									create: {
