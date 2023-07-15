@@ -68,7 +68,7 @@ model Event {
 model Race {
   id               String    @id @unique @default(cuid())
   raceId           String?
-  uniqueRaceString String?
+  uniqueRaceString String    @unique
   name             String?
   starts           Json?
   rank             String?

@@ -9,7 +9,7 @@
 	export let data: PageData
 
 	$: ({ events } = data)
-	$: console.log('events: ', events)
+	// $: console.log('events: ', events)
 </script>
 
 <Page title="Your Events">

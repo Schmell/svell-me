@@ -1,6 +1,7 @@
 import { prisma } from '$lib/server/prisma'
 import { error } from '@sveltejs/kit'
 import Blw from './Blw'
+import { Prisma } from '@prisma/client'
 
 interface CreateEventProps {
 	data: any
@@ -89,29 +90,26 @@ export const Populate = ({ data, userId, file, orgId }) => {
 			return { compId: comp.compId }
 		})
 
-		const racesArray = [
-			blw.getRaces(uniqueIdString).map((race) => {
-				return {
-					...race,
-					// Comps: {
-					// 	connect: compList
-					// },
-					Event: {
-						connect: { uniqueIdString: uniqueIdString }
-					},
-					Publisher: {
-						connect: { id: userId }
-					}
+		const racesArray = blw.getRaces(uniqueIdString).map((race) => {
+			return {
+				...race,
+				// Comps: {
+				// 	connect: compList
+				// },
+				Event: {
+					connect: { uniqueIdString: uniqueIdString }
+				},
+				Publisher: {
+					connect: { id: userId }
 				}
-			})
-		]
+			}
+		})
 
 		return racesArray
 	}
 
 	function compsCreate() {
-		const comps = blw.getComps().map((comp) => {
-			// console.log('comp: ', comp)
+		return blw.getComps().map((comp) => {
 			// need to connect event somehow, because a comp can have multiple events
 			return {
 				where: { compId: comp.compId },
@@ -124,10 +122,10 @@ export const Populate = ({ data, userId, file, orgId }) => {
 					rank: comp.rank,
 					nett: comp.nett,
 					total: comp.total,
-					rest: comp,
-					Events: {
-						connect: { uniqueIdString: uniqueIdString }
-					}
+					rest: comp
+					// Events: {
+					// 	connect: { uniqueIdString: uniqueIdString }
+					// }
 				},
 				create: {
 					compId: comp.compId,
@@ -141,7 +139,7 @@ export const Populate = ({ data, userId, file, orgId }) => {
 					total: comp.total,
 					rest: comp,
 					Events: {
-						connect: { uniqueIdString: uniqueIdString }
+						connect: [{ uniqueIdString: uniqueIdString }]
 					},
 					Publisher: {
 						connect: { id: userId }
@@ -149,7 +147,6 @@ export const Populate = ({ data, userId, file, orgId }) => {
 				}
 			}
 		})
-		return comps
 	}
 
 	function resultsCreate() {
@@ -178,6 +175,9 @@ export const Populate = ({ data, userId, file, orgId }) => {
 					},
 					Comp: {
 						connect: { compId: result.compId }
+					},
+					Race: {
+						connect: { uniqueRaceString: race.uniqueRaceString }
 					}
 				}
 			})
@@ -281,36 +281,37 @@ export const Populate = ({ data, userId, file, orgId }) => {
 	addTables()
 
 	async function addTables() {
-		console.log('addTables: ')
 		try {
 			// await prisma.event.upsert(upsertObj())
 			console.log('trying upsert')
 			console.time('trying upsert')
 			// const p = await prisma.event.upsert(upsertObj())
-			const p = await prisma.event.upsert(eventCreate())
+			await prisma.$transaction(
+				[
+					// prisma.event.upsert(eventCreate()), upsertObj()
+					prisma.event.upsert(upsertObj())
+					// compsCreate().map((comp) => {
+					// 	prisma.comp.upsert(comp)
+					// })
 
-			await compsCreate().map(async (comp) => {
-				await prisma.comp.upsert(comp)
-			})
+					// racesCreate().map(async (race) => {
+					// 	prisma.race.create({ data: race })
+					// }),
 
-			racesCreate().map(async (races) => {
-				await races.map(async (race) => {
-					await prisma.race.create({ data: race })
-					// console.log('race: ', race)
-				})
-			})
-
-			resultsCreate().map(async (results) => {
-				await results.map(async (result) => {
-					await prisma.result.create({ data: result })
-				})
-				// console.log('results: ', results)
-				// await prisma.result.createMany({ data: results })
-			})
+					// resultsCreate().map(async (results) => {
+					// 	results.map(async (result) => {
+					// 		prisma.result.create({ data: result })
+					// 	})
+					// })
+				],
+				{
+					isolationLevel: Prisma.TransactionIsolationLevel.Serializable // optional, default defined by database configuration
+				}
+			)
 
 			console.timeEnd('trying upsert')
 
-			console.log('upsert return: ', p.name)
+			console.log('Import finished: ')
 		} catch (error: any) {
 			console.log('Import Error: ', error.message)
 		}
