@@ -61,11 +61,7 @@ export const actions: Actions = {
 				throw error(418, `error from import server ts ${err}`)
 			}
 		})
-		// })
-		// history.back()
-		// goto('/events')
-		// console.log('redirect: ')
+
 		throw redirect(300, '/events')
-		// return { status: 201 }
 	}
 }
