@@ -187,8 +187,9 @@ export default class Blw {
 			}
 
 			raceObj.raceId = race[3]
+			// console.log('race: ', race[3], race[1])
 			// need to get eventeid
-			raceObj.uniqueRaceString = uniqueIdString + '_' + race.raceId
+			raceObj.uniqueRaceString = uniqueIdString + '_' + race[3]
 
 			let resultRows = this.data.filter((item: any) => {
 				var regex = new RegExp(`^race`, 'g')

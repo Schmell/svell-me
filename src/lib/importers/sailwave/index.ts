@@ -81,7 +81,7 @@ export const Populate = ({ data, userId, file, orgId }) => {
 		}
 	}
 
-	function racesCreate() {
+	async function racesCreate() {
 		// this should maybe hit a createMany
 		const comps = blw.getComps()
 		const compList = comps.map((comp) => {
@@ -106,7 +106,7 @@ export const Populate = ({ data, userId, file, orgId }) => {
 		return racesArray
 	}
 
-	function compsCreate() {
+	async function compsCreate() {
 		return blw.getComps().map((comp) => {
 			// need to connect event somehow, because a comp can have multiple events
 			return {
@@ -136,9 +136,9 @@ export const Populate = ({ data, userId, file, orgId }) => {
 					nett: comp.nett,
 					total: comp.total,
 					rest: comp,
-					Events: {
-						connect: [{ uniqueIdString: uniqueIdString }]
-					},
+					// Events: {
+					// 	connect: [{ uniqueIdString: uniqueIdString }]
+					// },
 					Publisher: {
 						connect: { id: userId }
 					}
@@ -147,10 +147,12 @@ export const Populate = ({ data, userId, file, orgId }) => {
 		})
 	}
 
-	function resultsCreate() {
+	async function resultsCreate() {
 		// const races = blw.getComps()
 		return blw.getRaces(uniqueIdString).map((race) => {
 			return blw.getResults(race.raceId).map((result) => {
+				// console.log('result.compId: ', result.compId)
+				// console.log('race.uniqueRaceString: ', race.uniqueRaceString)
 				//  Note convert to numbers
 				return {
 					resultId: result.resultId,
@@ -275,6 +277,10 @@ export const Populate = ({ data, userId, file, orgId }) => {
 		}
 	}
 
+	function delay(t) {
+		return new Promise((resolve) => setTimeout(resolve, t))
+	}
+
 	addTables()
 
 	async function addTables() {
@@ -282,29 +288,24 @@ export const Populate = ({ data, userId, file, orgId }) => {
 			// await prisma.event.upsert(upsertObj())
 			console.log('trying upsert')
 			console.time('trying upsert')
-			// const p = await prisma.event.upsert(upsertObj())
-			await prisma.$transaction(
-				[
-					// prisma.event.upsert(eventCreate()), upsertObj()
-					prisma.event.upsert(upsertObj())
-					// compsCreate().map((comp) => {
-					// 	prisma.comp.upsert(comp)
-					// })
+			const p = await prisma.event.upsert(eventCreate())
+			const comps = await compsCreate()
+			await comps.map(async (comp) => {
+				await prisma.comp.upsert(comp)
+				await delay(1000)
+			})
+			const races = await racesCreate()
+			await races.map(async (race) => {
+				await prisma.race.create({ data: race })
+				await delay(1000)
+			})
 
-					// racesCreate().map(async (race) => {
-					// 	prisma.race.create({ data: race })
-					// }),
-
-					// resultsCreate().map(async (results) => {
-					// 	results.map(async (result) => {
-					// 		prisma.result.create({ data: result })
-					// 	})
-					// })
-				],
-				{
-					isolationLevel: Prisma.TransactionIsolationLevel.Serializable // optional, default defined by database configuration
-				}
-			)
+			const resultsArray = await resultsCreate()
+			await resultsArray.map(async (results) => {
+				await results.map(async (result) => {
+					await prisma.result.create({ data: result })
+				})
+			})
 
 			console.timeEnd('trying upsert')
 

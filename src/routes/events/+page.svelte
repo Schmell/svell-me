@@ -9,6 +9,7 @@
 	export let data: PageData
 
 	$: ({ events } = data)
+
 	// $: console.log('events: ', events)
 </script>
 
