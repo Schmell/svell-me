@@ -297,27 +297,27 @@ export const Populate = ({ data, userId, file, orgId }) => {
 			await prisma.event.upsert(eventCreate())
 			console.log('event comlpete: ')
 
-			// await Promise.all(
-			// 	comps.map(async (comp) => {
-			// 		return await prisma.comp.upsert(comp)
-			// 	})
-			// )
+			await Promise.all(
+				comps.map(async (comp) => {
+					return await prisma.comp.upsert(comp)
+				})
+			)
 			// await delay(3000)
-
-			// races.forEach(async (race) => {
-			// 	await prisma.race.upsert(race)
-			// })
-			// await races.map(async (race) => {
-			// 	return await prisma.race.upsert(race)
-			// })
+			await Promise.all(
+				races.map(async (race) => {
+					return await prisma.race.upsert(race)
+				})
+			)
 
 			console.log('races comlpete: ')
-			// await resultsArray.map(async (results) => {
-			// 	await results.map(async (result) => {
-			// 		await prisma.result.create({ data: result })
-			// 		console.log('result: ')
-			// 	})
-			// })
+
+			await Promise.all(
+				resultsArray.map(async (results) => {
+					await results.map(async (result) => {
+						await prisma.result.create({ data: result })
+					})
+				})
+			)
 
 			console.log('Import finished: ')
 		} catch (error: any) {

@@ -91,8 +91,7 @@ export default class Blw {
 		const resultsArr: any = []
 		// use rdisc to get an individuals result
 		const results = this.data.filter((item: any) => {
-			// return item[0] === 'rdisc' && item[3] === raceId
-			return item[0] === 'rdisc'
+			return item[0] === 'rdisc' && item[3] === raceId
 		})
 		// console.log('results: ', results)
 		results.forEach((result: any) => {
