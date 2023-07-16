@@ -1,6 +1,6 @@
 import type { Actions, PageServerLoad } from '../$types'
 import { error, redirect } from '@sveltejs/kit'
-import { CheckForDuplicates, Populate } from '$lib/importers/sailwave'
+import { CheckForDuplicates, Populate } from '$lib/importers/sailwave/backup'
 
 import pkg from 'papaparse'
 const { parse } = pkg

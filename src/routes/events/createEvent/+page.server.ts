@@ -1,4 +1,4 @@
-import { CheckForDuplicates, Populate } from '$lib/importers/sailwave'
+import { CheckForDuplicates, Populate } from '$lib/importers/sailwave/backup'
 import { prisma } from '$lib/server/prisma'
 import { error, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
