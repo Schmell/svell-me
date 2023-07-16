@@ -44,8 +44,6 @@ export const Populate = ({ data, userId, file, orgId }) => {
 	const blw = new Blw({ data, file })
 	const event = blw.getEvent()
 	const { eventeid, uniqueIdString } = event
-	const blwComps = blw.getComps()
-	console.log('uniqueIdString: ', uniqueIdString)
 
 	// The query needs to be broken into smaller chunkcs to work in serverless
 	// Instead of one big upsert we need to check for duplicates first
@@ -83,108 +81,81 @@ export const Populate = ({ data, userId, file, orgId }) => {
 		}
 	}
 
-	async function racesCreate() {
-		//
-		const compList = await blwComps.map((comp) => {
-			return { compId: comp.compId }
-		})
-		// console.log('compList: ', compList)
-
-		return await blw.getRaces(uniqueIdString).map((race) => {
+	function racesCreate() {
+		// this should maybe hit a createMany
+		return blw.getRaces(uniqueIdString).map((race) => {
 			return {
-				where: { uniqueRaceString: race.uniqueRaceString },
-				update: {},
-				create: {
-					...race,
-					Comps: {
-						connect: compList
-					},
-					Event: {
-						connect: { uniqueIdString: uniqueIdString }
-					},
-					Publisher: {
-						connect: { id: userId }
-					}
-				}
+				...race
+				// Comps: {
+				// 	connect: compList
+				// },
+				// Event: {
+				// 	connect: { uniqueIdString: uniqueIdString }
+				// },
+				// Publisher: {
+				// 	connect: { id: userId }
+				// }
 			}
 		})
 	}
 
-	async function compsCreate() {
-		return await blw.getComps().map((comp) => {
+	function compsCreate() {
+		return blw.getComps().map((comp) => {
 			// need to connect event somehow, because a comp can have multiple events
 			return {
-				where: { compId: comp.compId },
-				update: {
-					club: comp.club,
-					boat: comp.boat,
-					skipper: comp.helmname,
-					fleet: comp.fleet,
-					division: comp.division,
-					rank: comp.rank,
-					nett: comp.nett,
-					total: comp.total,
-					rest: comp,
-					Events: {
-						connect: [{ uniqueIdString: uniqueIdString }]
-					}
-				},
-				create: {
-					compId: comp.compId,
-					club: comp.club,
-					boat: comp.boat,
-					skipper: comp.helmname,
-					fleet: comp.fleet,
-					division: comp.division,
-					rank: comp.rank,
-					nett: comp.nett,
-					total: comp.total,
-					rest: comp,
-					Events: {
-						connect: [{ uniqueIdString: uniqueIdString }]
-					},
-					Publisher: {
-						connect: { id: userId }
-					}
-				}
+				compId: comp.compId,
+				club: comp.club,
+				boat: comp.boat,
+				skipper: comp.helmname,
+				fleet: comp.fleet,
+				division: comp.division,
+				rank: comp.rank,
+				nett: comp.nett,
+				total: comp.total,
+				rest: comp
+				// Events: {
+				// 	connect: [{ uniqueIdString: uniqueIdString }]
+				// },
+				// Publisher: {
+				// 	connect: { id: userId }
+				// }
 			}
 		})
 	}
 
-	async function resultsCreate() {
-		// const races = blw.getComps()
-		return blw.getRaces(uniqueIdString).map((race) => {
-			return blw.getResults(race.raceId).map((result) => {
-				// console.log('result.compId: ', result.compId)
-				// console.log('race.uniqueRaceString: ', race.uniqueRaceString)
-				//  Note convert to numbers
-				return {
-					resultId: result.resultId,
-					points: result.points,
-					finish: result.finish,
-					start: result.start,
-					position: result.position,
-					discard: result.discard,
-					elasped: result.elasped,
-					corrected: result.corrected,
-					resultType: result.resultType,
-					elapsedWin: result.elapsedWin,
-					ratingWin: result.ratingWin,
+	function resultsCreate() {
+		// return blw.getResults(race.raceId).map((result) => {
+		// console.log('blw.getResults ', blw.getResults(''))
+		return blw.getResults('').map((result) => {
+			// console.log('result.compId: ', result.compId)
+			// console.log('race.uniqueRaceString: ', race.uniqueRaceString)
+			//  Note convert to numbers
+			return {
+				resultId: result.resultId,
+				points: result.points,
+				finish: result.finish,
+				start: result.start,
+				position: result.position,
+				discard: result.discard,
+				elasped: result.elasped,
+				corrected: result.corrected,
+				resultType: result.resultType,
+				elapsedWin: result.elapsedWin,
+				ratingWin: result.ratingWin
 
-					Publisher: {
-						connect: { id: userId }
-					},
-					Event: {
-						connect: { uniqueIdString: event.uniqueIdString }
-					},
-					Comp: {
-						connect: { compId: result.compId }
-					},
-					Race: {
-						connect: { uniqueRaceString: race.uniqueRaceString }
-					}
-				}
-			})
+				// Publisher: {
+				// 	connect: { id: userId }
+				// }
+				// Event: {
+				// 	connect: { uniqueIdString: event.uniqueIdString }
+				// },
+				// Comp: {
+				// 	connect: { compId: result.compId }
+				// },
+				// Race: {
+				// 	connect: { uniqueRaceString: race.uniqueRaceString }
+				// }
+			}
 		})
 	}
 
@@ -288,38 +259,15 @@ export const Populate = ({ data, userId, file, orgId }) => {
 	addTables()
 
 	async function addTables() {
+		// console.log('resultsCreate(): ', resultsCreate())
+		resultsCreate()
 		try {
-			// await prisma.event.upsert(upsertObj())
-			const comps = await compsCreate()
-			const races = await racesCreate()
-			const resultsArray = await resultsCreate()
-
-			await prisma.event.upsert(eventCreate())
-			console.log('event comlpete: ')
-
-			// await Promise.all(
-			// 	comps.map(async (comp) => {
-			// 		return await prisma.comp.upsert(comp)
-			// 	})
-			// )
-			// await delay(3000)
-
-			// races.forEach(async (race) => {
-			// 	await prisma.race.upsert(race)
-			// })
-			// await races.map(async (race) => {
-			// 	return await prisma.race.upsert(race)
-			// })
-
-			console.log('races comlpete: ')
-			// await resultsArray.map(async (results) => {
-			// 	await results.map(async (result) => {
-			// 		await prisma.result.create({ data: result })
-			// 		console.log('result: ')
-			// 	})
-			// })
-
-			console.log('Import finished: ')
+			await prisma.$transaction([
+				prisma.event.upsert(eventCreate()),
+				prisma.comp.createMany({ data: compsCreate() }),
+				prisma.race.createMany({ data: racesCreate() }),
+				prisma.result.createMany({ data: resultsCreate() })
+			])
 		} catch (error: any) {
 			console.log('Import Error: ', error.message)
 		}

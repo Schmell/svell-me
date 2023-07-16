@@ -42,8 +42,8 @@
 			<div class="flex-none">
 				<ul class="menu menu-horizontal px-1 z-50 w-40">
 					<li>
-						<button>set the theme here</button>
-						<ul class="p-2 bg-base-100 text-base-content w-full max-h-96 overflow-y-scroll">
+						<button><Icon icon="arcticons:theme-store" /></button>
+						<ul class="p-2 bg-base-100 text-base-content w-36 max-h-96 overflow-y-scroll">
 							<form method="POST" use:enhance={submitUpdateTheme}>
 								{#each themes as theme}
 									<li>

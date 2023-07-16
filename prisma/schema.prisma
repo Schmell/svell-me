@@ -2,17 +2,24 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator json {
-  provider  = "prisma-json-types-generator"
-  namespace = "PrismaJson"
-}
+// generator json {
+//   provider  = "prisma-json-types-generator"
+//   namespace = "PrismaJson"
+// }
 
+// VERCEL
 datasource db {
   provider          = "postgresql"
   url               = env("CUSTOM_POSTGRES_POOL")
   directUrl         = env("POSTGRES_URL_NON_POOLING")
   shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
 }
+
+// // LOCALHOST
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("LOCAL_DATABASE_URL")
+// }
 
 model Series {
   id             String        @id @unique @default(cuid())
@@ -54,7 +61,7 @@ model Event {
   updatedAt      DateTime?     @updatedAt
   seriesId       String?
   email          String?
-  Comps          Comp[]
+  // Comps          Comp[]
   Organization   Organization? @relation(fields: [organizationId], references: [id])
   Publisher      User?         @relation(fields: [publisherId], references: [id])
   Series         Series?       @relation(fields: [seriesId], references: [id])
@@ -63,6 +70,8 @@ model Event {
   Results        Result[]
   follow         follow[]
   like           like[]
+  Comps          Comp[]
+  compId         String?
 }
 
 model Race {
@@ -88,7 +97,9 @@ model Race {
   Results          Result[]
   follow           follow[]
   like             like[]
-  Comps            Comp[]    @relation("CompToRace")
+  Comps            Comp[]
+
+  compId String?
 }
 
 model Comp {
@@ -115,7 +126,9 @@ model Comp {
   Results     Result[]
   follow      follow[]
   like        like[]
-  Races       Race[]    @relation("CompToRace")
+  Races       Race[]
+
+  raceId String?
 
   @@index([compId])
 }
