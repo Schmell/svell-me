@@ -31,7 +31,7 @@ export function CreateEvent({ data, userId, file, orgId }: CreateEventProps) {
 	// figure out a way to unique -ish comps
 }
 
-export const Populate = ({ data, userId, file, orgId }) => {
+export async function Populate({ data, userId, file, orgId }) {
 	// so upsert is easy but this doesn't make sense.
 	// people will either be creating, updating or overwritting
 	// ??????? could have Duplicate problems by using this method

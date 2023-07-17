@@ -52,8 +52,12 @@ export const actions: Actions = {
 				if (duplicates !== null) {
 					console.log('duplicates: ', duplicates)
 				}
-				// console.log('parse complete ')
-				Populate({ data: results.data, userId: uid?.userId, file: file, orgId: org })
+
+				// Populate maybe needs to be async
+				// ideally should have some kind of info return
+				// maybe a store can be implemented to change the status of how the populate process is going
+				// ultimately need to know when this finishes before doing the redirect
+				await Populate({ data: results.data, userId: uid?.userId, file: file, orgId: org })
 			},
 			error: (status, err) => {
 				// TODO

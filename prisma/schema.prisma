@@ -71,7 +71,7 @@ model Event {
   follow         follow[]
   like           like[]
   Comps          Comp[]
-  compId         String?
+  // compId         String?
 }
 
 model Race {

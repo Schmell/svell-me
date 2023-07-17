@@ -12,11 +12,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 		where: { publisherId: session.userId },
 		include: { Publisher: true }
 	})
-	const orgs = await prisma.organization.findMany({
-		where: { ownerId: session.userId }
-	})
+	// const orgs = await prisma.organization.findMany({
+	// 	where: { ownerId: session.userId }
+	// })
 	return {
-		events,
-		orgs
+		events
+		// orgs
 	}
 }
