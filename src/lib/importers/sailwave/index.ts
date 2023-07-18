@@ -45,7 +45,6 @@ export async function Populate({ data, userId, file, orgId }) {
 	const event = blw.getEvent()
 	const { eventeid, uniqueIdString } = event
 	const blwComps = blw.getComps()
-	console.log('uniqueIdString: ', uniqueIdString)
 
 	// The query needs to be broken into smaller chunkcs to work in serverless
 	// Instead of one big upsert we need to check for duplicates first
@@ -293,33 +292,33 @@ export async function Populate({ data, userId, file, orgId }) {
 			const comps = await compsCreate()
 			const races = await racesCreate()
 			const resultsArray = await resultsCreate()
-
+			console.log('Start import')
+			console.time('time: ')
 			await prisma.event.upsert(eventCreate())
-			console.log('event comlpete: ')
+			console.timeLog('time: ', 'event comlpete: ')
 
 			await Promise.all(
 				comps.map(async (comp) => {
 					return await prisma.comp.upsert(comp)
 				})
 			)
-			// await delay(3000)
+			console.timeLog('time: ', 'comps complete')
 			await Promise.all(
 				races.map(async (race) => {
 					return await prisma.race.upsert(race)
 				})
 			)
-
-			console.log('races comlpete: ')
+			console.timeLog('time: ', 'races comlpete: ')
 
 			await Promise.all(
 				resultsArray.map(async (results) => {
-					await results.map(async (result) => {
+					results.map(async (result) => {
 						await prisma.result.create({ data: result })
 					})
 				})
 			)
-
-			console.log('Import finished: ')
+			console.timeLog('time: ', 'results comlpete: ')
+			console.timeEnd('time: ')
 		} catch (error: any) {
 			console.log('Import Error: ', error.message)
 		}

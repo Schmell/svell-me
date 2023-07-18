@@ -2,10 +2,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// generator json {
-//   provider  = "prisma-json-types-generator"
-//   namespace = "PrismaJson"
-// }
+generator json {
+  provider  = "prisma-json-types-generator"
+  namespace = "PrismaJson"
+}
 
 // VERCEL
 datasource db {
