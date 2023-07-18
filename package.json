@@ -60,7 +60,6 @@
 		"daisyui": "^2.50.2",
 		"lucia": "^1.0.0",
 		"lucia-auth": "^0.6.2",
-		"papaparse": "^5.3.2",
-		"prisma-json-types-generator": "^2.5.0"
+		"papaparse": "^5.3.2"
 	}
 }
