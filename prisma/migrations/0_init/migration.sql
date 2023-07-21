@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "CommentType" AS ENUM ('series', 'event', 'race', 'result', 'comp');
+
+-- CreateEnum
 CREATE TYPE "Lang" AS ENUM ('english', 'french', 'spanish', 'german', 'dutch', 'swedish', 'russian', 'chinese', 'japanese', 'norweigen', 'italian', 'portugese');
 
 -- CreateTable
@@ -44,7 +47,7 @@ CREATE TABLE "Event" (
 CREATE TABLE "Race" (
     "id" TEXT NOT NULL,
     "raceId" TEXT,
-    "uniqueRaceString" TEXT,
+    "uniqueRaceString" TEXT NOT NULL,
     "name" TEXT,
     "starts" JSONB,
     "rank" TEXT,
@@ -58,6 +61,7 @@ CREATE TABLE "Race" (
     "publisherId" TEXT,
     "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
+    "compId" TEXT,
 
     CONSTRAINT "Race_pkey" PRIMARY KEY ("id")
 );
@@ -77,9 +81,9 @@ CREATE TABLE "Comp" (
     "total" TEXT,
     "rest" JSONB,
     "publisherId" TEXT,
-    "eventId" TEXT,
     "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
+    "raceId" TEXT,
 
     CONSTRAINT "Comp_pkey" PRIMARY KEY ("id")
 );
@@ -125,6 +129,17 @@ CREATE TABLE "Organization" (
     "updatedAt" TIMESTAMP(3),
 
     CONSTRAINT "Organization_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "eventComment" (
+    "id" TEXT NOT NULL,
+    "type" "CommentType" NOT NULL,
+    "ref" TEXT NOT NULL,
+    "comment" TEXT NOT NULL,
+    "eventId" TEXT,
+
+    CONSTRAINT "eventComment_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -234,6 +249,12 @@ CREATE TABLE "_SeriesToVenue" (
 );
 
 -- CreateTable
+CREATE TABLE "_CompToEvent" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "_CompToRace" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
@@ -249,10 +270,13 @@ CREATE UNIQUE INDEX "Event_uniqueIdString_key" ON "Event"("uniqueIdString");
 CREATE UNIQUE INDEX "Race_id_key" ON "Race"("id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Race_uniqueRaceString_key" ON "Race"("uniqueRaceString");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Comp_compId_key" ON "Comp"("compId");
 
 -- CreateIndex
-CREATE INDEX "Comp_compId_eventId_idx" ON "Comp"("compId", "eventId");
+CREATE INDEX "Comp_compId_idx" ON "Comp"("compId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Result_id_key" ON "Result"("id");
@@ -262,6 +286,9 @@ CREATE INDEX "Result_raceId_idx" ON "Result"("raceId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Organization_name_key" ON "Organization"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "eventComment_id_key" ON "eventComment"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "follow_id_key" ON "follow"("id");
@@ -312,6 +339,12 @@ CREATE UNIQUE INDEX "_SeriesToVenue_AB_unique" ON "_SeriesToVenue"("A", "B");
 CREATE INDEX "_SeriesToVenue_B_index" ON "_SeriesToVenue"("B");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "_CompToEvent_AB_unique" ON "_CompToEvent"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_CompToEvent_B_index" ON "_CompToEvent"("B");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "_CompToRace_AB_unique" ON "_CompToRace"("A", "B");
 
 -- CreateIndex
@@ -342,9 +375,6 @@ ALTER TABLE "Race" ADD CONSTRAINT "Race_eventId_fkey" FOREIGN KEY ("eventId") RE
 ALTER TABLE "Race" ADD CONSTRAINT "Race_publisherId_fkey" FOREIGN KEY ("publisherId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Comp" ADD CONSTRAINT "Comp_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Comp" ADD CONSTRAINT "Comp_publisherId_fkey" FOREIGN KEY ("publisherId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -361,6 +391,9 @@ ALTER TABLE "Result" ADD CONSTRAINT "Result_raceId_fkey" FOREIGN KEY ("raceId") 
 
 -- AddForeignKey
 ALTER TABLE "Organization" ADD CONSTRAINT "Organization_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "eventComment" ADD CONSTRAINT "eventComment_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "follow" ADD CONSTRAINT "follow_compId_fkey" FOREIGN KEY ("compId") REFERENCES "Comp"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -418,6 +451,12 @@ ALTER TABLE "_SeriesToVenue" ADD CONSTRAINT "_SeriesToVenue_A_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "_SeriesToVenue" ADD CONSTRAINT "_SeriesToVenue_B_fkey" FOREIGN KEY ("B") REFERENCES "Venue"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_CompToEvent" ADD CONSTRAINT "_CompToEvent_A_fkey" FOREIGN KEY ("A") REFERENCES "Comp"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_CompToEvent" ADD CONSTRAINT "_CompToEvent_B_fkey" FOREIGN KEY ("B") REFERENCES "Event"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_CompToRace" ADD CONSTRAINT "_CompToRace_A_fkey" FOREIGN KEY ("A") REFERENCES "Comp"("id") ON DELETE CASCADE ON UPDATE CASCADE;

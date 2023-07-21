@@ -1,7 +1,7 @@
 <script lang="ts">
 	export let type: 'submit' | 'button' | 'reset' = 'submit'
 	export let position: string | undefined = undefined
-	export let clazz
+	export let clazz: string | undefined = undefined
 	export { clazz as class }
 	// refactor this to use $$rest_props or even $$props
 </script>

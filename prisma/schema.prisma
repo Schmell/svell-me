@@ -35,19 +35,19 @@ model Series {
   Publisher      User?         @relation(fields: [publisherId], references: [id])
   follow         follow[]
   like           like[]
-  Venues         Venue[]       @relation("SeriesToVenue")
+  Venues         Venue[]
 }
 
 model Event {
-  id             String        @id @default(cuid())
+  id             String         @id @default(cuid())
   eventeid       String
-  uniqueIdString String        @unique
+  uniqueIdString String         @unique
   name           String
   eventwebsite   String?
   venueName      String?
   description    String?
   titleImage     String?
-  public         Boolean       @default(true)
+  public         Boolean        @default(true)
   /// [fileInfo]
   fileInfo       Json?
   /// [resultColumns]
@@ -57,20 +57,21 @@ model Event {
   publisherId    String?
   venueId        String?
   organizationId String?
-  createdAt      DateTime?     @default(now())
-  updatedAt      DateTime?     @updatedAt
+  createdAt      DateTime?      @default(now())
+  updatedAt      DateTime?      @updatedAt
   seriesId       String?
   email          String?
   // Comps          Comp[]
-  Organization   Organization? @relation(fields: [organizationId], references: [id])
-  Publisher      User?         @relation(fields: [publisherId], references: [id])
-  Series         Series?       @relation(fields: [seriesId], references: [id])
-  Venue          Venue?        @relation(fields: [venueId], references: [id])
+  Organization   Organization?  @relation(fields: [organizationId], references: [id])
+  Publisher      User?          @relation(fields: [publisherId], references: [id])
+  Series         Series?        @relation(fields: [seriesId], references: [id])
+  Venue          Venue?         @relation(fields: [venueId], references: [id])
   Races          Race[]
   Results        Result[]
   follow         follow[]
   like           like[]
   Comps          Comp[]
+  comments       eventComment[]
   // compId         String?
 }
 
@@ -98,8 +99,7 @@ model Race {
   follow           follow[]
   like             like[]
   Comps            Comp[]
-
-  compId String?
+  compId           String?
 }
 
 model Comp {
@@ -181,6 +181,28 @@ model Organization {
   like        like[]
 }
 
+model eventComment {
+  type      String?
+  ref       String?
+  comment   String
+  Event     Event?    @relation(fields: [eventId], references: [id])
+  eventId   String?
+  User      User      @relation(fields: [userId], references: [id])
+  userId    String
+  likes     like[]
+  id        String    @id @unique @default(cuid())
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+enum CommentType {
+  series
+  event
+  race
+  result
+  comp
+}
+
 model follow {
   id             String        @id @unique @default(cuid())
   userId         String
@@ -217,20 +239,24 @@ model like {
   Race           Race?         @relation(fields: [raceId], references: [id])
   Series         Series?       @relation(fields: [seriesId], references: [id])
   User           User          @relation(fields: [userId], references: [id])
+  eventComment   eventComment? @relation(fields: [eventCommentId], references: [id])
+  eventCommentId String?
 }
 
 model Venue {
-  id          String    @id @unique @default(cuid())
-  name        String    @unique
+  id          String   @id @unique @default(cuid())
+  name        String   @unique
   website     String?
   email       String?
   burgee      String?
+  address     Json?
   publisherId String?
-  createdAt   DateTime? @default(now())
-  updatedAt   DateTime? @updatedAt
-  Event       Event[]
-  Publisher   User?     @relation(fields: [publisherId], references: [id])
-  Series      Series[]  @relation("SeriesToVenue")
+  Events      Event[]
+  Publisher   User?    @relation(fields: [publisherId], references: [id])
+  Series      Series[]
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model User {
@@ -252,6 +278,7 @@ model User {
   Key          Key[]
   like         like[]
   session      Session[]
+  eventComment eventComment[]
 
   @@map("user")
 }

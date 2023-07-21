@@ -1,7 +1,7 @@
 import { prisma } from '$lib/server/prisma'
 import { error } from '@sveltejs/kit'
 import Blw from './Blw'
-import { Prisma } from '@prisma/client'
+// import { Prisma } from '@prisma/client'
 
 interface CreateEventProps {
 	data: any

@@ -37,7 +37,7 @@
 					{org?.email}
 				</a>
 				<p class="mt-2 text-base-content">
-					{org?.description ? org?.description : 'No description provided'}
+					{@html org?.description ? org?.description : 'No description provided'}
 				</p>
 				<a href={getHref(org)} class="text-secondary">{org?.website} </a>
 			</div>
