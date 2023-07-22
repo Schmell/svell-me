@@ -1,7 +1,7 @@
 import preprocess from 'svelte-preprocess'
 import adapter from '@sveltejs/adapter-vercel'
 import { vitePreprocess } from '@sveltejs/kit/vite'
-import { preprocessMeltUI } from '@melt-ui/pp'
+// import { preprocessMeltUI } from '@melt-ui/pp'
 import sequence from 'svelte-sequential-preprocessor'
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -14,8 +14,8 @@ const config = {
 		vitePreprocess(),
 		preprocess({
 			postcss: true
-		}),
-		preprocessMeltUI() // add to the end!
+		})
+		// preprocessMeltUI() // add to the end!
 	]),
 
 	kit: {
