@@ -1,6 +1,5 @@
 import { prisma } from '$lib/server/prisma'
-// import { z } from 'zod'
-import type { PageServerLoad } from './$types'
+import type { PageServerLoad, Actions } from './$types'
 
 export const load = (async ({ params, locals }) => {
 	// console.log('params: ', params)
@@ -69,25 +68,22 @@ export const actions = {
 	like: async ({ request, params, locals }) => {
 		const fd = await request.formData()
 		const formData = Object.fromEntries(fd) as Record<string, string>
-		// console.log('formData: ', formData)
+		console.log('formData: ', formData)
 		const user = await locals.validateUser()
 
-		async function addLike() {
-			try {
-				await prisma.like.create({
-					data: {
-						type: 'comment',
-						eventComment: { connect: { id: formData.commentId } },
-						User: { connect: { id: user.user?.userId } },
-						Event: { connect: { id: formData.eventId } }
-					}
-				})
-			} catch (error) {
-				console.log('error: ', error)
-			}
+		try {
+			return await prisma.like.create({
+				data: {
+					type: 'comment',
+					eventComment: { connect: { id: formData.commentId } },
+					User: { connect: { id: user.user?.userId } },
+					Event: { connect: { id: params.eventId } }
+				}
+			})
+		} catch (error) {
+			console.log('error: ', error)
+			return { error: 'error' }
 		}
-
-		addLike()
 	},
 
 	unlike: async ({ request, locals, params }) => {
@@ -96,9 +92,9 @@ export const actions = {
 		const user = await locals.validateUser()
 		console.log('formData: ', formData)
 		try {
-			// await prisma.like.delete({
-			// 	where: { eventCommentId: formData.commentId }
-			// })
+			await prisma.like.delete({
+				where: { id: formData.likeId }
+			})
 		} catch (error) {
 			console.log('error: ', error)
 		}
@@ -127,4 +123,4 @@ export const actions = {
 			console.log('error: ', error)
 		}
 	}
-}
+} satisfies Actions

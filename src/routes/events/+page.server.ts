@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw redirect(302, '/')
 	}
 	const events = await prisma.event.findMany({
-		where: { publisherId: session.userId },
+		// where: { publisherId: session.userId },
 		include: { Publisher: true }
 	})
 	// const orgs = await prisma.organization.findMany({

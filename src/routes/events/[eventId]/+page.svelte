@@ -1,20 +1,23 @@
 <script script lang="ts">
-	import type { Event } from '@prisma/client'
 	import type { PageData } from './$types'
 	import Page from '$lib/components/layout/Page.svelte'
 	import Icon from '@iconify/svelte'
 	import { page } from '$app/stores'
 	import Input from '$lib/components/form/Input.svelte'
 	import Button from '$lib/components/form/Button.svelte'
+	// import Picker from 'emoji-picker-element/svelte'
 	import { enhance } from '$app/forms'
-	import AscSort from '../../results/[raceId]/ascSort.svelte'
-	import { prisma } from '$lib/server/prisma'
+	import { formatDateTime } from '$lib/utils/formatters'
+	import { now } from 'svelte/internal'
+
 	// import { comment } from 'svelte/internal'
 
 	export let data: PageData
 	export let form
+	// $: console.log('form: ', form)
 	// export let liked
 	$: ({ event, comments } = data)
+
 	// $: console.log('comments: ', comments)
 	// $: console.log('event: ', event)
 	//
@@ -29,17 +32,18 @@
 		return false
 	}
 
-	async function getLikeId(comment) {
-		comment.likes?.forEach((like) => {
-			// console.log('like: ', like.id)
-			if (like.userId === data.user?.userId) {
-				try {
-					// await prisma.like.delete({
-					// 	where: id: like.id
-					// })
-				} catch (error) {}
-			}
-		})
+	function getLikeId(comment) {
+		// comment.likes?.forEach((like) => {
+		// 	// console.log('like: ', like.id)
+		// 	if (like.userId === data.user?.userId) {
+		// 		try {
+		// 			// await prisma.like.delete({
+		// 			// 	where: id: like.id
+		// 			// })
+		// 		} catch (error) {}
+		// 	}
+		// })
+		return comment.id
 	}
 </script>
 
@@ -98,7 +102,7 @@
 					{#if event?.comments}
 						{#each event?.comments as comment}
 							<div class="avatar">
-								<div class="w-6">
+								<div class="w-6 bg-base-300">
 									<img alt={`@${comment?.User.username}`} src={comment?.User.avatar} />
 								</div>
 							</div>
@@ -128,6 +132,9 @@
 									<a href="/user/{comment.User.id}">{`@${comment.User.username}`}</a>
 								</div>
 								<div>{@html comment.comment}</div>
+								<div class="text-xs text-accent">
+									{formatDateTime(comment?.createdAt ?? new Date())}
+								</div>
 							</div>
 
 							<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
@@ -147,7 +154,8 @@
 								<div>
 									<form method="post" action="?/like" use:enhance>
 										<input type="hidden" name="eventId" value={event?.id} />
-										<input type="hidden" name="commentId" value={getLikeId(comment)} />
+										<input type="hidden" name="commentId" value={comment.id} />
+										<input type="hidden" name="likeId" value={form?.id} />
 										<div
 											class="flex items-center gap-2 px-2 rounded-full "
 											class:bg-accent={checkForUserLike(comment)}
@@ -155,14 +163,19 @@
 										>
 											{#if checkForUserLike(comment)}
 												<button formaction="?/unlike">
-													<Icon icon="mdi:thumb-up" />
+													<Icon class="text-base-100" icon="mdi:thumb-up" />
 												</button>
 											{:else}
 												<button>
 													<Icon icon="mdi:thumb-up-outline" />
 												</button>
 											{/if}
-											<div class="border-l-2 border-base-200 pl-2">{comment._count.likes}</div>
+											<div
+												class=" border-l-2 border-base-200 pl-2"
+												class:text-base-100={checkForUserLike(comment)}
+											>
+												{comment._count.likes}
+											</div>
 										</div>
 									</form>
 								</div>
@@ -179,6 +192,7 @@
 			<input type="hidden" name="type" value="event" />
 			<input type="hidden" name="eventCommentId" value="new" />
 			<Button type="submit">Submit</Button>
+			<!-- <Picker /> -->
 		</form>
 	</Page>
 {/if}
