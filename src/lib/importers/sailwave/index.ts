@@ -300,8 +300,10 @@ export async function Populate({ data, userId, file, orgId, input }) {
 			messages.update(() => {
 				return { message: 'Importing started' }
 			})
+
 			await prisma.event.upsert(eventCreate())
 			console.timeLog('time: ', 'event comlpete: ')
+
 			messages.update(() => {
 				return { message: 'Event complete' }
 			})
@@ -311,18 +313,22 @@ export async function Populate({ data, userId, file, orgId, input }) {
 					return await prisma.comp.upsert(comp)
 				})
 			)
+
 			messages.update(() => {
 				return { message: 'Comps complete' }
 			})
+
 			console.timeLog('time: ', 'comps complete')
 			await Promise.all(
 				races.map(async (race) => {
 					return await prisma.race.upsert(race)
 				})
 			)
+
 			messages.update(() => {
 				return { message: 'Races complete' }
 			})
+
 			console.timeLog('time: ', 'races comlpete: ')
 
 			await Promise.all(
@@ -332,9 +338,11 @@ export async function Populate({ data, userId, file, orgId, input }) {
 					})
 				})
 			)
+
 			messages.update(() => {
 				return { message: 'Import complete' }
 			})
+
 			console.timeLog('time: ', 'results comlpete: ')
 			console.timeEnd('time: ')
 		} catch (error: any) {
