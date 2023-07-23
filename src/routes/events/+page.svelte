@@ -33,11 +33,13 @@
 					</a>
 				</div>
 				<!-- Edit should only show when current user is owner -->
-				<div class="tooltip tooltip-top" data-tip="Event Edit">
-					<a href="/events/edit/{event?.id}?from={$page.url.pathname}" class="btn btn-ghost">
-						<Icon icon="material-symbols:edit-outline" width="24" />
-					</a>
-				</div>
+				{#if data.user?.userId === event?.publisherId}
+					<div class="tooltip tooltip-top" data-tip="Event Edit">
+						<a href="/events/edit/{event?.id}?from={$page.url.pathname}" class="btn btn-ghost">
+							<Icon icon="material-symbols:edit-outline" width="24" />
+						</a>
+					</div>
+				{/if}
 			</div>
 			<div>
 				{event.description ? event.description : 'No description provided'}
@@ -49,7 +51,7 @@
 			>
 			<div slot="bottom-left" class="p-2 text-xs text-base-content">
 				<div>
-					Updated:
+					<!-- Updated: -->
 					<span class="px-2">
 						{#if event.updatedAt}
 							{formatDateTime(event.updatedAt)}
@@ -58,7 +60,7 @@
 						{/if}
 					</span>
 				</div>
-				<div>
+				<!-- <div>
 					Created:
 					<span class="px-2">
 						{#if event.createdAt}
@@ -67,7 +69,7 @@
 							No time provided
 						{/if}
 					</span>
-				</div>
+				</div> -->
 			</div>
 		</ItemCard>
 	{/each}

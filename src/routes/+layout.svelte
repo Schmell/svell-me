@@ -7,6 +7,10 @@
 	import { enhance } from '$app/forms'
 	import { themes } from '$lib/utils'
 	import { page } from '$app/stores'
+	import { getFlash } from 'sveltekit-flash-message/client'
+	import { messages } from '$lib/stores/messages'
+
+	const flash = getFlash(page)
 	// // Your selected Skeleton theme:
 	// import '@skeletonlabs/skeleton/themes/theme-skeleton.css'
 
@@ -31,6 +35,11 @@
 		}
 	}
 </script>
+
+{#if $flash}
+	{@const bg = $flash.type == 'success' ? '#3D9970' : '#FF4136'}
+	<div style:background-color={bg} class="flash">{$flash.message}</div>
+{/if}
 
 <div class="max-w-sm">
 	<div class="fixed top-0 z-20  w-full ">
@@ -124,6 +133,9 @@
 
 	<footer class="shadow">
 		<div class="btm-nav text-base-content">
+			{#if $messages}
+				<div>{$messages.message}</div>
+			{/if}
 			<button class="">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"

@@ -9,7 +9,9 @@ declare global {
 			validateUser: import('@lucia-auth/sveltekit').ValidateUser
 			setSession: import('@lucia-auth/sveltekit').SetSession
 		}
-		interface PageData {}
+		interface PageData {
+			flash?: { type: 'success' | 'error'; message: string }
+		}
 		// interface Platform {}
 	}
 	var __prisma: PrismaClient
