@@ -5,6 +5,7 @@
 	import TextInput from '$lib/components/form/TextInput.svelte'
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte'
 	import Check from '$lib/components/form/Check.svelte'
+	import Textarea from '$lib/components/form/Textarea.svelte'
 
 	export let data
 
@@ -23,7 +24,7 @@
 		</label>
 	</div>
 	<TextInput name="name" {form} {errors} />
-	<TextInput name="description" {form} {errors} />
+	<Textarea name="description" {form} {errors} />
 	<TextInput name="eventwebsite" label="Website" {form} {errors} />
 	<TextInput name="email" {form} {errors} />
 

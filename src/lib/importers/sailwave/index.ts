@@ -33,7 +33,7 @@ export function CreateEvent({ data, userId, file, orgId }: CreateEventProps) {
 	// figure out a way to unique -ish comps
 }
 
-export async function Populate({ data, userId, file, orgId, input }) {
+export async function Populate({ data, userId, file, orgId }) {
 	// so upsert is easy but this doesn't make sense.
 	// people will either be creating, updating or overwritting
 	// ??????? could have Duplicate problems by using this method
@@ -54,8 +54,9 @@ export async function Populate({ data, userId, file, orgId, input }) {
 	// Not to sure how to do the races as i had comps and results nested
 
 	function eventCreate() {
+		const { venueemail, venuewebsite, venueburgee, ...rest } = event
 		const eventObj = {
-			...event,
+			...rest,
 
 			Publisher: {
 				connect: { id: userId }
@@ -68,9 +69,9 @@ export async function Populate({ data, userId, file, orgId, input }) {
 					where: { name: event.venueName },
 					create: {
 						name: event.venueName,
-						email: event.rest.venueemail,
-						website: event.rest.venuewebsite,
-						burgee: event.rest.venueburgee,
+						email: venueemail,
+						website: venuewebsite,
+						burgee: venueburgee,
 						Publisher: { connect: { id: userId } }
 					}
 				}
@@ -85,11 +86,9 @@ export async function Populate({ data, userId, file, orgId, input }) {
 	}
 
 	async function racesCreate() {
-		//
 		const compList = await blwComps.map((comp) => {
 			return { compId: comp.compId }
 		})
-		// console.log('compList: ', compList)
 
 		return await blw.getRaces(uniqueIdString).map((race) => {
 			return {
@@ -204,9 +203,9 @@ export async function Populate({ data, userId, file, orgId, input }) {
 					where: { name: event.venueName },
 					create: {
 						name: event.venueName,
-						email: event.rest.venueemail,
-						website: event.rest.venuewebsite,
-						burgee: event.rest.venueburgee
+						email: event.venueemail,
+						website: event.venuewebsite,
+						burgee: event.venueburgee
 					}
 				}
 			},

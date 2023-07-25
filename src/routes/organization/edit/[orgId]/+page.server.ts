@@ -64,7 +64,7 @@ export const actions: Actions = {
 			}
 		}
 		const from = url.searchParams.get('from')
-		console.log('from: ', from)
+		// console.log('from: ', from)
 		if (from) {
 			throw redirect(303, `/${from}`)
 		}

@@ -12,7 +12,7 @@ export const load = async ({ params }) => {
 	if (params.eventId === 'new') {
 		// console.log('params.eventId: ', params.eventId)
 		// console.log('event: ', event)
-		console.log('form: ', form)
+		// console.log('form: ', form)
 	} else {
 		if (!event) throw error(404, 'Not found')
 	}
@@ -24,12 +24,12 @@ export const load = async ({ params }) => {
 export const actions = {
 	default: async ({ request, params, url }) => {
 		const form = await superValidate(request, eventSchema)
+
 		// Convenient validation check:
 		if (!form.valid) {
 			// Again, always return { form } and things will just work.
 			return fail(400, { form })
 		}
-		// console.log('form: ', form)
 		const {
 			rank,
 			points,
@@ -67,11 +67,7 @@ export const actions = {
 			console.log('err: ', err)
 			throw error(400, 'Error updating the event')
 		}
-		// const redirectTo = url.searchParams.get('from')
-		// if (redirectTo) {
-		// 	throw redirect(302, `/${redirectTo.slice(1)}`)
-		// }
-		// throw redirect(302, '/')
-		return { form }
+
+		throw redirect(302, `${url.searchParams.get('from')}`)
 	}
 }

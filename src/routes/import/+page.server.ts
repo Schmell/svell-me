@@ -7,6 +7,11 @@ const { parse } = pkg
 import { prisma } from '$lib/server/prisma'
 import { goto } from '$app/navigation'
 
+export const config = {
+	runtime: 'edge',
+	regions: 'all'
+}
+
 export const load: PageServerLoad = async ({ locals }) => {
 	const session = await locals.validate()
 	// If not logged in redirect
@@ -25,7 +30,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
 	default: async (input) => {
-		const { request, locals, params, cookies } = input
+		const { request, locals } = input
 		const fd = await request.formData()
 
 		const { org, file }: any = Object.fromEntries(fd)
@@ -42,7 +47,7 @@ export const actions: Actions = {
 		parse(texted, {
 			complete: async (results) => {
 				// console.log('complete: papaparse')
-				const uid = await input.locals.validate()
+				const uid = await locals.validate()
 				const duplicates = await CheckForDuplicates({
 					data: results.data,
 					userId: uid?.userId,
@@ -58,7 +63,7 @@ export const actions: Actions = {
 				// ideally should have some kind of info return
 				// maybe a store can be implemented to change the status of how the populate process is going
 				// ultimately need to know when this finishes before doing the redirect
-				Populate({ data: results.data, userId: uid?.userId, file: file, orgId: org, input: input })
+				Populate({ data: results.data, userId: uid?.userId, file: file, orgId: org })
 			},
 			error: (status, err) => {
 				// TODO

@@ -284,7 +284,10 @@ export default class Blw {
 			uniqueIdString,
 			venueName: venue,
 			eventeid: eventeid,
-			rest
+			venueemail: rest.venueemail,
+			venuewebsite: rest.venuewebsite,
+			venueburgee: rest.venueburgee
+			// rest
 		}
 	} // getSeries
 }

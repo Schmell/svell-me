@@ -5,30 +5,32 @@
 	import Icon from '@iconify/svelte'
 	import type { PageData } from './$types'
 
-	export let data: PageData
+	export let data
 	$: ({ user, comps } = data)
-	// console.log('comps: ', comps?.rest );
+	// $: console.log('comps: ', comps)
 </script>
 
 <Page title="Competitiors">
 	{#if comps}
 		{#each comps as comp}
 			<ItemCard title={comp.boat ? comp.boat : comp.skipper} href="/comps/comp/{comp.id}">
-				<div slot="top-right">
+				<!-- <div slot="top-right">
 					<a href="/races/{comp.id}" class="btn btn-accent btn-xs">View Races</a>
-				</div>
+				</div> -->
 				<div slot="bottom-right" class="flex justify-end text-primary">
-					<div class="tooltip tooltip-top" data-tip="View Competitors">
-						<a href="/comps/{comp?.id}" class="btn btn-ghost p-1">
+					<div class="tooltip tooltip-top" data-tip="View Competitor">
+						<a href="/comps/comp/{comp?.id}" class="btn btn-ghost p-1">
 							<Icon icon="material-symbols:groups-outline-rounded" width="30" />
 						</a>
 					</div>
 					<!-- Edit should only show when current user is owner -->
-					<div class="tooltip tooltip-top" data-tip="Race Edit">
-						<a href="/event/{comp?.id}" class="btn btn-ghost">
-							<Icon icon="material-symbols:edit-outline" width="24" />
-						</a>
-					</div>
+					{#if user?.userId === comps.publisherId}
+						<div class="tooltip tooltip-top" data-tip="Edit Competitor">
+							<a href="/comps/{comp?.id}?edit=1" class="btn btn-ghost">
+								<Icon icon="material-symbols:edit-outline" width="24" />
+							</a>
+						</div>
+					{/if}
 				</div>
 				<div class="flex flex-col">
 					<div>
