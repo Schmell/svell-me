@@ -7,11 +7,6 @@ const { parse } = pkg
 import { prisma } from '$lib/server/prisma'
 import { goto } from '$app/navigation'
 
-export const config = {
-	runtime: 'edge',
-	regions: 'all'
-}
-
 export const load: PageServerLoad = async ({ locals }) => {
 	const session = await locals.validate()
 	// If not logged in redirect
